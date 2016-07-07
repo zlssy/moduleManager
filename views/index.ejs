@@ -1,0 +1,34 @@
+<%- include public/header %>
+<link href="/css/dialog.css" rel="stylesheet" />
+<%- include public/head %>
+<div id="wrap-container">
+<ul class="project-list"></ul>
+</div>
+<%- include public/copyright %>
+<script id="createTpl" type="text/html">
+    <li class="create" title="创建项目">+</li>
+</script>
+<script id="projectItemTpl" type="text/html">
+    <%%
+        var item;
+        for(var i=0,l=list.length;i<l;i++){
+            item = list[i];
+    %>
+    <li data-id="<%%= item._id %>">
+        <h1><%%= item.name %></h1>
+        <small><%%= item.createTime %></small>
+        <div class="user-group">用户组：<span><%%= item.userGroup %></span></div>
+    </li>
+    <%% } %>
+</script>
+<script id="createProjectTpl" type="text/html">
+<div class="create-panel">
+    <div class="item"><label>项目名称：</label><input type="text" name="project-name" /></div>
+    <div class="item"><label>成员组：</label><input type="text" name="user-group" /></div>
+    <div class="item"><span class="errorinfo"></span><button class="save">保存</button></div>
+</div>
+</script>
+<script>
+    require(['project']);
+</script>
+<%- include public/footer %>

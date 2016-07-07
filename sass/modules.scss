@@ -1,0 +1,87 @@
+@import "colors";
+$asideWidth: 200;
+
+#module-container {
+  zoom: 1;
+  overflow: hidden;
+  padding-left: #{$asideWidth+10}px;
+
+  aside {
+    position: relative;
+    width: #{$asideWidth}px;
+    float: left;
+    height: 100%;
+    min-height: 500px;
+    border-right: solid 1px $gray;
+    left: -#{$asideWidth+10}px;
+    margin-left: -100%;
+  }
+
+  #main-container {
+    float: left;
+    width: 100%;
+
+    .empty{
+      line-height: 48px;
+      text-align: center;
+      margin: 60px 0;
+    }
+  }
+
+  &:after{
+    content: ' ';
+    clear: both;
+  }
+}
+
+#create{
+  position: absolute;
+  top: 24px;
+  right: 12px;
+}
+
+
+/* module add */
+#moduleadd-container{
+  margin: 0 24px;
+  padding: 6px 24px;
+  border:solid 1px $gray;
+  border-radius: 20px;
+  line-height: 24px;
+
+  .item{
+    margin: 6px 0;
+
+    label{
+      width: 100px;
+      display: inline-block;
+      text-align: right;
+    }
+
+    input[type=text]{
+      width: 70%;
+      padding-left: 4px;
+      height: 24px;
+      line-height: 24px;
+      min-width: 100px;
+    }
+
+    textarea{
+      width: 70%;
+      padding-left: 4px;
+      min-width: 200px;
+      height: 30%;
+      min-height: 200px;
+    }
+
+    #btn-save{
+      margin-top: 24px;
+    }
+  }
+
+  h1{
+    &#project-name{
+      text-align: center;
+    }
+  }
+}

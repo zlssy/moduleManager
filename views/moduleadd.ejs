@@ -1,0 +1,58 @@
+<%- include public/header %>
+<link href="/css/dialog.css" rel="stylesheet" />
+<%- include public/head %>
+<div id="wrap-container">
+    <div id="moduleadd-container">
+        <form action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="pid" value="" />
+            <input type="hidden" name="id" value="" />
+            <div class="item">
+                <h1 id="project-name">项目</h1>
+            </div>
+            <div class="item">
+                <label>模块标识：</label>
+                <input type="text" name="id" placeholder="填写唯一标识，与模块文件名一致" />
+            </div>
+            <div class="item">
+                <label>模块名称：</label>
+                <input type="text" name="name" placeholder="给模块取个名字" />
+            </div>
+            <div class="item">
+                <label>模块路径：</label>
+                <input type="text" name="path" placeholder="模块文件的可访问路径" />
+            </div>
+            <div class="item">
+                <label>模块作者：</label>
+                <input type="text" name="author" />
+            </div>
+            <div class="item">
+                <label>模块代码：</label>
+                <textarea name="code"></textarea>
+            </div>
+            <div class="item">
+                <label>Demo代码：</label>
+                <textarea name="demo"></textarea>
+            </div>
+            <div class="item">
+                <label>依赖项：</label>
+                <ul id="dependencies"></ul>
+            </div>
+            <div class="item">
+                <label>创建时间：</label>
+                <span id="createTime"></span>
+            </div>
+            <div class="item">
+                <label>最后修改时间：</label>
+                <span id="lastModify"></span>
+            </div>
+            <div class="item">
+                <button id="btn-save" class="face">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+<%- include public/copyright %>
+<script>
+    require(['moduleadd']);
+</script>
+<%- include public/footer %>

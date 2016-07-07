@@ -1,0 +1,70 @@
+@import "colors";
+
+html{
+  font-size: 14px;
+  font-family: '微软雅黑', '宋体', Arial;
+}
+
+html,
+body,
+ul,
+ol,
+li,
+dl,
+dt,
+dd,
+aside{
+  margin: 0;
+  padding: 0;
+}
+
+#wrap-container{
+  margin: 12px 0;
+}
+
+header{
+  height: 80px;
+  background: $lightGreen;
+
+  & > .logo{
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    line-height: 80px;
+    padding: 0 0 0 12px;
+  }
+}
+
+footer{
+  border-top: solid 1px $gray;
+  margin: 12px 0 0 0;
+  .copyright{
+    padding: 12px 0;
+    line-height: 24px;
+    text-align: center;
+  }
+}
+
+button{
+  line-height: 24px;
+  padding: 8px 12px;
+  background: $buttonBg;
+  color: $buttonColor;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: '微软雅黑', '宋体', Arial;
+
+  &.face{
+    background: $lightGreen;
+
+    &:hover{
+      background: $buttonFaceHover;
+    }
+  }
+
+  &:hover{
+    background: $buttonHover;
+  }
+}

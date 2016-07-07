@@ -1,0 +1,26 @@
+<%- include public/header %>
+<link href="/css/dialog.css" rel="stylesheet" />
+<%- include public/head %>
+<div id="wrap-container">
+    <div id="module-container">
+        <div id="main-container"></div>
+        <aside></aside>
+    </div>
+    <button id="create">新建模块</button>
+</div>
+<%- include public/copyright %>
+<script id="projectItemTpl" type="text/html">
+    <%%
+    var item;
+    for(var i=0,l=list.length;i<l;i++){
+        item = list[i];
+    %>
+    <li data-id="<%%= item._id %>">
+        <div class="user-group">用户组：<span><%%= item.userGroup %></span></div>
+    </li>
+    <%% } %>
+</script>
+<script>
+    require(['modules']);
+</script>
+<%- include public/footer %>

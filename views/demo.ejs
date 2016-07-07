@@ -1,0 +1,65 @@
+<%- include public/header %>
+
+<%- include public/head %>
+<div id="wrap-container">
+    <section id="multiSearch">
+        <dl class="level1">
+            <dt>区域：</dt>
+            <dd>
+                <a href="javascript:;" data-key="">不限</a>
+                <a href="javascript:;" data-key="tianxinqu">天心区</a>
+                <a href="javascript:;" data-key="furongqu">芙蓉区</a>
+                <a href="javascript:;" data-key="yuhuaqu">雨花区</a>
+                <a href="javascript:;" data-key="yueluqu">岳麓区</a>
+            </dd>
+        </dl>
+        <dl class="level2">
+            <dt>商圈：</dt>
+            <dd>
+                <a href="javascript:;" data-key="">不限</a>
+                <a href="javascript:;" data-key="baishalu">白沙路</a>
+                <a href="javascript:;" data-key="wanglonglu">望龙路</a>
+                <a href="javascript:;" data-key="chezhanlu">车站路</a>
+                <a href="javascript:;" data-key="wuyidadao">五一大道</a>
+            </dd>
+        </dl>
+        <dl class="level3" data-key="p">
+            <dt>总价：</dt>
+            <dd>
+                <a href="javascript:;" data-key="">不限</a>
+                <a href="javascript:;" data-key="p1">50w以下</a>
+                <a href="javascript:;" data-key="p2">50-80w</a>
+                <a href="javascript:;" data-key="p3">80-100w</a>
+                <a href="javascript:;" data-key="p4">100w以上</a>
+            </dd>
+        </dl>
+        <dl class="level3" data-key="m">
+            <dt>面积：</dt>
+            <dd>
+                <a href="javascript:;" data-key="">不限</a>
+                <a href="javascript:;" data-key="m1">50平以下</a>
+                <a href="javascript:;" data-key="m2">50-80平</a>
+                <a href="javascript:;" data-key="m3">80-100平</a>
+                <a href="javascript:;" data-key="m4">100平以上</a>
+            </dd>
+        </dl>
+        <div class="cur-condition"><label>当前检索条件：</label></div>
+    </section>
+    <ul id="list">
+        <li>检索结果列表。<%= params %></li>
+    </ul>
+</div>
+<%- include public/copyright %>
+<script id="removeItemTpl" type="text/html">
+<%%
+    var item;
+    for(var i=0, l=list.length;i<l;i++){
+        item = list[i];
+%>
+    <a href="<%%= item.url %>"><%%= item.name %></a>
+<%% } %>
+</script>
+<script>
+    require(['demo']);
+</script>
+<%- include public/footer %>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="/lib/require.min.js"></script>
+    <script>
+        require.config({
+            baseUrl: '/modules',
+            paths: {
+                jquery: '/lib/jquery.min',
+                underscore: '/lib/underscore.min'
+            },
+            shim: {
+                underscore: {
+                    exports: '_'
+                }
+            }
+        });
+    </script>
+</head>
+<body>
