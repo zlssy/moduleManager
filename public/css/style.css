@@ -138,3 +138,7 @@ a:hover { color: #24B73D; }
 #moduleadd-container .btn-load-module { padding: 0 12px; }
 
 #moduleadd-container h1#project-name { text-align: center; }
+
+.crumbs { margin: 0 0 12px 28px; }
+
+.crumbs a:first-child:before { content: ' ♔ '; }

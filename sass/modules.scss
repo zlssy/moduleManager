@@ -185,3 +185,13 @@ $asideWidth: 200;
     }
   }
 }
+
+.crumbs{
+   margin: 0 0 12px 28px;
+
+   a:first-child{
+    &:before{
+      content: ' ♔ ';
+    }
+   }
+ }

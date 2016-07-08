@@ -24,6 +24,7 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
             if (0 === json.code) {
                 if (json.data) {
                     $('h1#project-name').html(json.data.name + '项目');
+                    $('.crumbs > a').eq(1).attr('href', '/module?pid=' + pid).html(json.data.name);
                 }
                 else {
                     info('项目数据拉去出错.');
@@ -92,10 +93,10 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                         $el.removeClass('error');
                         d_path.val(getModuleBase() + v + '.js');
 
-                        if(2 === validate){
+                        if (2 === validate) {
                             d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
                         }
-                        else{
+                        else {
                             $('.btn-load-module').length && $('.btn-load-module').remove();
                         }
                     }
@@ -202,11 +203,11 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
             method: 'post',
             data: {filename: d_id.val()},
             success: function (json) {
-                if(0 === json.code){
+                if (0 === json.code) {
                     d_code.val(json.data);
                     info('模块载入成功！')
                 }
-                else{
+                else {
                     info('模块载入失败！');
                 }
             },
