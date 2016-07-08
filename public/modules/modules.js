@@ -67,7 +67,18 @@ define('modules', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                         module: json.data,
                         htmlEncode: util.htmlEncode
                     }));
-                    // console.log(json.data);
+
+                    /**
+                     * 设置默认选中项
+                     */
+                    ul.find('a[href]').each(function (i,v) {
+                        var $el = $(v),
+                            href = $el.attr('href');
+
+                        if(href.indexOf(mid) > -1){
+                            $el.addClass('active');
+                        }
+                    });
                 }
                 else {
                     main.html('<div class="empty">拉取模块数据失败.</div>');

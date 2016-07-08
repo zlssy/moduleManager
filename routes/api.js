@@ -280,6 +280,27 @@ router.post('/module/save', function (req, res, next) {
 });
 
 /**
+ * 加载已存在的模块文件
+ */
+router.post('/module/load', function (req, res, next) {
+    var filename = req.body.filename;
+    util.readFile(moduleFolder+'/'+filename+'.js', function (result, data) {
+        if(result) {
+            return res.json({
+                code: 0,
+                data: data
+            });
+        }else{
+            return res.json({
+                code: 1,
+                msg: data.message
+            });
+        }
+
+    });
+});
+
+/**
  * 校验模块标识符是否可用
  * @param id  标识符
  * @param cb  处理函数

@@ -105,6 +105,12 @@ $asideWidth: 200;
       &:before{
         content: '✿ '
       }
+
+      a{
+        &.active {
+          color: $lightGreen;
+        }
+      }
     }
   }
 
@@ -167,6 +173,10 @@ $asideWidth: 200;
     #btn-save{
       margin-top: 24px;
     }
+  }
+
+  .btn-load-module{
+    padding: 0 12px;
   }
 
   h1{

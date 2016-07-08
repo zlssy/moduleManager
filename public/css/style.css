@@ -112,6 +112,8 @@ a:hover { color: #24B73D; }
 
 #module-container #module-list li:before { content: '✿ '; }
 
+#module-container #module-list li a.active { color: #24B73D; }
+
 #module-container:after { content: ' '; clear: both; }
 
 #create { position: absolute; top: 24px; right: 12px; }
@@ -132,5 +134,7 @@ a:hover { color: #24B73D; }
 #moduleadd-container .item textarea.error { border: solid 1px #ff0000; }
 
 #moduleadd-container .item #btn-save { margin-top: 24px; }
+
+#moduleadd-container .btn-load-module { padding: 0 12px; }
 
 #moduleadd-container h1#project-name { text-align: center; }

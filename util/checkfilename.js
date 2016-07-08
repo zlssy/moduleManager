@@ -33,6 +33,12 @@ function fileInFolder(filename, folder, cb) {
 
 exports.fileInFolder = fileInFolder;
 
+/**
+ * 保存文件至指定目录
+ * @param filename
+ * @param data
+ * @param cb
+ */
 exports.saveFile = function (filename, data, cb) {
     if(filename && data){
         fs.writeFile(path.resolve(filename), data, {encoding: 'utf-8'}, function (err) {
@@ -43,6 +49,27 @@ exports.saveFile = function (filename, data, cb) {
             else {
                 cb(1);
             }
+        });
+    }
+};
+
+/**
+ * 读取指定文件
+ * @param filename
+ * @param cb
+ */
+exports.readFile = function (filename, cb) {
+    if(filename){
+        fs.stat(filename, function (err, data) {
+            if(err){
+                return cb(false, err);
+            }
+            fs.readFile(filename,{encoding: 'utf-8'}, function (fe, d) {
+                if(fe){
+                    return cb(false, err);
+                }
+                cb(true, d);
+            });
         });
     }
 };

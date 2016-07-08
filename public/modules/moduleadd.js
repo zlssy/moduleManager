@@ -5,6 +5,7 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
         getApi = '/api/module/view/', // 模块获取接口
         saveApi = '/api/module/save', // 模块保存接口
         checkApi = '/api/module/check/', // 模块标识符校验接口
+        loadApi = '/api/module/load', // 载入模块源文件接口
         validate = 1, // 是否校验通过
         d_id = $('input[name=id]'),
         d_name = $('input[name=name]'),
@@ -90,20 +91,30 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                         validate = 1 === json.code ? 2 : 1;
                         $el.removeClass('error');
                         d_path.val(getModuleBase() + v + '.js');
+
+                        if(2 === validate){
+                            d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
+                        }
+                        else{
+                            $('.btn-load-module').length && $('.btn-load-module').remove();
+                        }
                     }
                     else {
                         validate = 0;
+                        $('.btn-load-module').length && $('.btn-load-module').remove();
                         $el.addClass('error');
                     }
                 },
                 error: function (json) {
                     validate = 0;
+                    $('.btn-load-module').length && $('.btn-load-module').remove();
                     $el.addClass('error');
                 }
             });
         }
         else {
             validate = 0;
+            $('.btn-load-module').length && $('.btn-load-module').remove();
             $el.addClass('error');
         }
     }).on('focus keypress', function () {
@@ -180,6 +191,29 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
         else {
             info('校验未通过.', 2000);
         }
+    });
+
+    /**
+     * 绑定载入模块代码按钮事件
+     */
+    $('#moduleadd-container').on('click', '.btn-load-module', function () {
+        $.ajax({
+            url: loadApi,
+            method: 'post',
+            data: {filename: d_id.val()},
+            success: function (json) {
+                if(0 === json.code){
+                    d_code.val(json.data);
+                    info('模块载入成功！')
+                }
+                else{
+                    info('模块载入失败！');
+                }
+            },
+            error: function (json) {
+                info('载入模块失败！');
+            }
+        })
     });
 
     function getModuleBase() {
