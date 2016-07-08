@@ -28,10 +28,12 @@ router.get(/\/module\/?([^\/]*)/, function (req, res, next) {
       action: action
     });
   }
-  res.render('module', {
-    title: '模块管理',
-    action: action
-  });
+  else {
+    res.render('module', {
+      title: '模块管理',
+      action: action
+    });
+  }
 });
 
 router.get('/', function(req, res, next) {

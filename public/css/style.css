@@ -21,6 +21,10 @@ button.face:hover { background: rgba(36, 183, 61, 0.8); }
 
 button:hover { background: rgba(0, 0, 0, 0.1); }
 
+a { text-decoration: none; color: #000; }
+
+a:hover { color: #24B73D; }
+
 
 #multiSearch { line-height: 24px; min-width: 600px; }
 
@@ -73,6 +77,13 @@ button:hover { background: rgba(0, 0, 0, 0.1); }
 
 .create-panel .item .save { float: right; }
 
+@charset "UTF-8";
+/* common */
+.center { text-align: center; }
+
+.right { text-align: right; }
+
+/* module */
 #module-container { zoom: 1; overflow: hidden; padding-left: 210px; }
 
 #module-container aside { position: relative; width: 200px; float: left; height: 100%; min-height: 500px; border-right: solid 1px #ddd; left: -210px; margin-left: -100%; }
@@ -80,6 +91,26 @@ button:hover { background: rgba(0, 0, 0, 0.1); }
 #module-container #main-container { float: left; width: 100%; }
 
 #module-container #main-container .empty { line-height: 48px; text-align: center; margin: 60px 0; }
+
+#module-container #main-container .tab { overflow: hidden; border-bottom: solid 1px #ddd; }
+
+#module-container #main-container .tab li { width: 120px; float: left; list-style: none; line-height: 24px; padding: 6px; text-align: center; border-left: solid 1px #ddd; border-top: solid 1px #ddd; cursor: pointer; }
+
+#module-container #main-container .tab li.active { background: #24B73D; color: #fff; }
+
+#module-container #main-container .tab li:last-child { border-right: solid 1px #ddd; }
+
+#module-container #main-container .date { display: block; color: #ddd; text-align: right; padding-right: 24px; }
+
+#module-container #main-container code { text-indent: -40px; border: 1px dashed #000; display: block; font-size: 12px; font-family: Courier, Calibri,"宋体"; margin: 10px 0 0 0; padding: 10px 0 10px 5px; border-radius: 12px; -moz-border-radius: 12px; background: #f5f5f5; color: #357eff; }
+
+#module-container #main-container code:before { content: ' Code '; position: relative; top: -20px; left: 80px; text-align: center; background: #fff; color: #000; }
+
+#module-container #module-list { margin-left: 12px; }
+
+#module-container #module-list li { list-style: none; line-height: 24px; }
+
+#module-container #module-list li:before { content: '✿ '; }
 
 #module-container:after { content: ' '; clear: both; }
 
@@ -92,9 +123,13 @@ button:hover { background: rgba(0, 0, 0, 0.1); }
 
 #moduleadd-container .item label { width: 100px; display: inline-block; text-align: right; }
 
-#moduleadd-container .item input[type=text] { width: 70%; padding-left: 4px; height: 24px; line-height: 24px; min-width: 100px; }
+#moduleadd-container .item input[type=text] { width: 70%; padding-left: 4px; height: 24px; line-height: 24px; min-width: 100px; border: 1px solid #ddd; }
 
-#moduleadd-container .item textarea { width: 70%; padding-left: 4px; min-width: 200px; height: 30%; min-height: 200px; }
+#moduleadd-container .item input[type=text].error { border: solid 1px #ff0000; }
+
+#moduleadd-container .item textarea { width: 70%; padding-left: 4px; min-width: 200px; height: 30%; min-height: 200px; border: 1px solid #ddd; }
+
+#moduleadd-container .item textarea.error { border: solid 1px #ff0000; }
 
 #moduleadd-container .item #btn-save { margin-top: 24px; }
 

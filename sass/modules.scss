@@ -1,6 +1,16 @@
 @import "colors";
 $asideWidth: 200;
 
+
+/* common */
+.center{
+  text-align: center;
+}
+.right{
+  text-align: right;
+}
+
+/* module */
 #module-container {
   zoom: 1;
   overflow: hidden;
@@ -25,6 +35,76 @@ $asideWidth: 200;
       line-height: 48px;
       text-align: center;
       margin: 60px 0;
+    }
+
+    .tab{
+      overflow: hidden;
+      border-bottom: solid 1px $gray;
+
+      li{
+        width: 120px;
+        float: left;
+        list-style: none;
+        line-height: 24px;
+        padding: 6px;
+        text-align: center;
+        border-left: solid 1px $gray;
+        border-top: solid 1px $gray;
+        cursor: pointer;
+
+        &.active{
+          background: $lightGreen;
+          color: #fff;
+        }
+
+        &:last-child{
+          border-right: solid 1px $gray;
+        }
+      }
+    }
+
+    .date{
+      display: block;
+      color: $gray;
+      text-align: right;
+      padding-right: 24px;
+    }
+
+    code{
+      text-indent: -40px;
+      border: 1px dashed #000;
+      display: block;
+      font-size: 12px;
+      font-family: Courier, Calibri,"宋体";
+      margin: 10px 0 0 0;
+      padding: 10px 0 10px 5px;
+      border-radius: 12px;
+      -moz-border-radius: 12px;
+      background: $codeBg;
+      color: $codeColor;
+
+      &:before{
+        content: ' Code ';
+        position: relative;
+        top: -20px;
+        left: 80px;
+        text-align: center;
+        background: #fff;
+        color: #000;
+      }
+    }
+  }
+
+  #module-list{
+    margin-left: 12px;
+
+    li{
+      list-style: none;
+      line-height: 24px;
+
+      &:before{
+        content: '✿ '
+      }
     }
   }
 
@@ -64,6 +144,11 @@ $asideWidth: 200;
       height: 24px;
       line-height: 24px;
       min-width: 100px;
+      border: 1px solid $gray;
+
+      &.error{
+        border: solid 1px $red;
+      }
     }
 
     textarea{
@@ -72,6 +157,11 @@ $asideWidth: 200;
       min-width: 200px;
       height: 30%;
       min-height: 200px;
+      border: 1px solid $gray;
+
+      &.error{
+        border: solid 1px $red;
+      }
     }
 
     #btn-save{

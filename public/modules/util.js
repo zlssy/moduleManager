@@ -322,6 +322,22 @@ define(['jquery'], function($) {
         window.console && console.log(msg);
     }
 
+    /**
+     * html转码
+     * @param value
+     */
+    function htmlEncode(value) {
+        return $('<div/>').text(value).html();
+    }
+
+    /**
+     * html 代码还原
+     * @param value
+     */
+    function htmlDecode(value) {
+        return $('<div/>').html(value).text();
+    }
+
     return {
         object2param: object2param,
         cookie: {
@@ -346,6 +362,8 @@ define(['jquery'], function($) {
             isDate: isDate,
             getTodayStr: getTodayStr
         },
+        htmlEncode: htmlEncode,
+        htmlDecode: htmlDecode,
         once: once,
         log: log
     };

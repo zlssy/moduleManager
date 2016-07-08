@@ -16,7 +16,7 @@ var moduleSchema = new Schema({
     demo: String,
     modified: {type: Boolean, default: false},
     createTime: {type: Date, default: Date.now},
-    lastModify: Date
+    lastModify: {type:Date}
 });
 
 exports.projectSchema = projectSchema;
