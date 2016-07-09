@@ -1,4 +1,4 @@
-define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
+define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, dialog, ace) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         projectApi = '/api/project/view/' + pid, // 项目接口
@@ -10,9 +10,15 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
         d_id = $('input[name=id]'),
         d_name = $('input[name=name]'),
         d_path = $('input[name=path]'),
-        d_author = $('input[name=author]'),
-        d_code = $('textarea[name=code]'),
-        d_demo = $('textarea[name=demo]');
+        d_author = $('input[name=author]');
+    
+    var d_code = ace.edit('code'),
+        d_demo = ace.edit('demo');
+
+    d_code.setTheme("ace/theme/monokai");
+    d_code.getSession().setMode("ace/mode/javascript");
+    d_demo.setTheme("ace/theme/monokai");
+    d_demo.getSession().setMode("ace/mode/javascript");
 
     /**
      * 获取项目信息并设置标题
@@ -60,8 +66,8 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                         d_id.val(json.data.id).prop('readonly', true);
                         d_path.val(getModuleBase() + json.data.id + '.js');
                         d_name.val(json.data.name);
-                        d_code.val(json.data.code);
-                        d_demo.val(json.data.demo);
+                        d_code.setValue(json.data.code);
+                        d_demo.setValue(json.data.demo);
                         d_author.val(json.data.author);
                     }
                 }
@@ -95,7 +101,9 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                         d_path.val(getModuleBase() + v + '.js');
 
                         if (2 === validate) {
-                            d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
+                            if(!d_path.parent().find('.btn-load-module').length) {
+                                d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
+                            }
                         }
                         else {
                             $('.btn-load-module').length && $('.btn-load-module').remove();
@@ -133,8 +141,8 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                 _name = d_name.val(),
                 _path = d_path.val(),
                 _author = d_author.val(),
-                _code = d_code.val(),
-                _demo = d_demo.val(),
+                _code = d_code.getValue(),
+                _demo = d_demo.getValue(),
                 _createTime = Date.now(),
                 _lastModify = Date.now();
 
@@ -205,7 +213,7 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
             data: {filename: d_id.val()},
             success: function (json) {
                 if (0 === json.code) {
-                    d_code.val(json.data);
+                    d_code.setValue(json.data);
                     info('模块载入成功！')
                 }
                 else {

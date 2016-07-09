@@ -1,5 +1,6 @@
 <%- include public/header %>
 <link href="/css/dialog.css" rel="stylesheet" />
+<script src="/js/ace.js"></script>
 <%- include public/head %>
 <div id="wrap-container">
     <div class="crumbs"><a href="/">我的项目</a> / <a href=""></a></div>
@@ -28,11 +29,11 @@
             </div>
             <div class="item">
                 <label>模块代码：</label>
-                <textarea name="code"></textarea>
+                <div id="code"></div>
             </div>
             <div class="item">
                 <label>Demo代码：</label>
-                <textarea name="demo"></textarea>
+                <div id="demo"></div>
             </div>
             <div class="item">
                 <label>依赖项：</label>
@@ -55,5 +56,14 @@
 <%- include public/copyright %>
 <script>
     require(['moduleadd']);
+</script>
+<script>
+//    require(['ace/ace'], function (ace) {
+//        var editor = ace.edit('code');
+//        editor.setTheme("ace/theme/monokai");
+//        editor.getSession().setMode("ace/mode/javascript");
+//
+//        editor.setValue('define(["jquery"])');
+//    });
 </script>
 <%- include public/footer %>

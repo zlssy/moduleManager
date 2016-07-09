@@ -70,7 +70,7 @@ $asideWidth: 200;
       padding-right: 24px;
     }
 
-    code{
+    pre > code{
       text-indent: -40px;
       border: 1px dashed #000;
       display: block;
@@ -157,7 +157,7 @@ $asideWidth: 200;
       }
     }
 
-    textarea{
+    textarea[name=code], textarea[name=demo]{
       width: 70%;
       padding-left: 4px;
       min-width: 200px;
@@ -168,6 +168,13 @@ $asideWidth: 200;
       &.error{
         border: solid 1px $red;
       }
+    }
+
+    #code, #demo{
+      display: inline-block;
+      width: 71%;
+      height: 500px;
+      border: 1px solid rgba($gray, .2);
     }
 
     #btn-save{

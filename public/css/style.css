@@ -102,9 +102,9 @@ a:hover { color: #24B73D; }
 
 #module-container #main-container .date { display: block; color: #ddd; text-align: right; padding-right: 24px; }
 
-#module-container #main-container code { text-indent: -40px; border: 1px dashed #000; display: block; font-size: 12px; font-family: Courier, Calibri,"宋体"; margin: 10px 0 0 0; padding: 10px 0 10px 5px; border-radius: 12px; -moz-border-radius: 12px; background: #f5f5f5; color: #357eff; }
+#module-container #main-container pre > code { text-indent: -40px; border: 1px dashed #000; display: block; font-size: 12px; font-family: Courier, Calibri,"宋体"; margin: 10px 0 0 0; padding: 10px 0 10px 5px; border-radius: 12px; -moz-border-radius: 12px; background: #f5f5f5; color: #357eff; }
 
-#module-container #main-container code:before { content: ' Code '; position: relative; top: -20px; left: 80px; text-align: center; background: #fff; color: #000; }
+#module-container #main-container pre > code:before { content: ' Code '; position: relative; top: -20px; left: 80px; text-align: center; background: #fff; color: #000; }
 
 #module-container #module-list { margin-left: 12px; }
 
@@ -129,9 +129,11 @@ a:hover { color: #24B73D; }
 
 #moduleadd-container .item input[type=text].error { border: solid 1px #ff0000; }
 
-#moduleadd-container .item textarea { width: 70%; padding-left: 4px; min-width: 200px; height: 30%; min-height: 200px; border: 1px solid #ddd; }
+#moduleadd-container .item textarea[name=code], #moduleadd-container .item textarea[name=demo] { width: 70%; padding-left: 4px; min-width: 200px; height: 30%; min-height: 200px; border: 1px solid #ddd; }
 
-#moduleadd-container .item textarea.error { border: solid 1px #ff0000; }
+#moduleadd-container .item textarea[name=code].error, #moduleadd-container .item textarea[name=demo].error { border: solid 1px #ff0000; }
+
+#moduleadd-container .item #code, #moduleadd-container .item #demo { display: inline-block; width: 71%; height: 500px; border: 1px solid rgba(221, 221, 221, 0.2); }
 
 #moduleadd-container .item #btn-save { margin-top: 24px; }
 
