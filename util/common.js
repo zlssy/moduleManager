@@ -73,3 +73,11 @@ exports.readFile = function (filename, cb) {
         });
     }
 };
+
+/**
+ * 获取本地时间，单位毫秒
+ * @param time
+ */
+exports.getLocalTime = function (time) {
+    return time - (new Date().getTimezoneOffset()) * 60000;
+};

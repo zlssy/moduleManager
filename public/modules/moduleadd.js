@@ -82,6 +82,7 @@ define('moduleadd', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
      * 绑定标识符事件
      */
     $('input[name=id]').on('blur', function () {
+        if(mid) return;
         var $el = $(this),
             v = $el.val();
         if (v) {

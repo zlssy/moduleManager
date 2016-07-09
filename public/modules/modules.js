@@ -51,6 +51,7 @@ define('modules', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
         if (!$el.hasClass('active')) {
             main.find('.content > div').hide().eq(index).show();
             main.find('.tab > li').removeClass('active').eq(index).addClass('active');
+            syncHeight();
         }
 
         if (2 === index && mid) {
@@ -79,6 +80,8 @@ define('modules', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                             $el.addClass('active');
                         }
                     });
+
+                    syncHeight();
                 }
                 else {
                     main.html('<div class="empty">拉取模块数据失败.</div>');
@@ -98,5 +101,16 @@ define('modules', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
         setTimeout(function () {
             d.close();
         }, t);
+    }
+    
+    function syncHeight() {
+        ul.attr('style', null);
+        main.attr('style', null);
+        var aH = ul.height(),
+            bH = main.height(),
+            h = Math.max(aH, bH);
+
+        ul.height(h);
+        main.height(h);
     }
 });

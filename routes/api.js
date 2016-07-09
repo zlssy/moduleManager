@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var util = require('../util/checkfilename');
+var util = require('../util/common');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var modelSchema = require('../models/model');
@@ -198,7 +198,7 @@ router.post('/module/save', function (req, res, next) {
         code = body.code,
         demo = body.demo,
         lastModify = body.lastModify,
-        createTime = Date.now(),
+        createTime = util.getLocalTime(Date.now()),
         m;
 
     if (_id) {
@@ -208,7 +208,7 @@ router.post('/module/save', function (req, res, next) {
             author: author,
             code: code,
             demo: demo,
-            lastModify: Date.now()
+            lastModify: util.getLocalTime(Date.now())
         }, function (err) {
             if (err) {
                 console.log(err);
