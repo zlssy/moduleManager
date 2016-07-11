@@ -299,7 +299,7 @@ define(['jquery'], function($) {
     function once(fn) {
         var run = false;
         return function() {
-            !run && (run = !run, fn.call());
+            !run && (run = !run, fn.apply(arguments[0] || null, Array.prototype.slice.call(arguments, 1)));
         }
     }
 
@@ -357,7 +357,6 @@ define(['jquery'], function($) {
         },
         formatJson: formatJson,
         loadJsonp: loadJsonp,
-        isDate: isDate,
         date: {
             isDate: isDate,
             getTodayStr: getTodayStr

@@ -16,7 +16,7 @@
     %>
     <li data-id="<%%= item._id %>">
         <h1><%%= item.name %></h1>
-        <small><%%= item.createTime %></small>
+        <small><%%= moment(new Date(item.createTime).getTime()).format('YYYY-MM-DD HH:mm:ss') %></small>
         <div class="user-group">用户组：<span><%%= item.userGroup %></span></div>
     </li>
     <%% } %>

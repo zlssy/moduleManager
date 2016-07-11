@@ -1,4 +1,4 @@
-define('project', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
+define('project', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dialog, moment) {
     var createTpl = $('#createProjectTpl').html(),
         itemTpl = $('#projectItemTpl').html(),
         createButtonTpl = $('#createTpl').html(),
@@ -60,7 +60,8 @@ define('project', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
             success: function (json) {
                 if(0 === json.code){
                     p.html(util.formatJson(itemTpl, {
-                        list: json.data
+                        list: json.data,
+                        moment: moment
                     }));
                 }
                 p.append(createButtonTpl);

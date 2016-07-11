@@ -1,9 +1,13 @@
-define('demo', ['jquery', 'util', 'multiSearch'], function ($, util, multiSearch) {
+define('demo', ['jquery', 'util', 'multiSearch', 'pager'], function ($, util, multiSearch, pager) {
     var wrap = $('#wrap-container');
     var condition_container = $('.cur-condition');
     var template = $('#removeItemTpl').html();
     var m = new multiSearch({
         path: '/demo'
+    });
+    var p = new pager({
+        total: 400,
+        pageno: util.url.getUrlParam('page') || 1
     });
 
     m.init();
@@ -15,4 +19,6 @@ define('demo', ['jquery', 'util', 'multiSearch'], function ($, util, multiSearch
             list: keys
         }));        
     }
+
+    $('#list').after(p.get());
 });
