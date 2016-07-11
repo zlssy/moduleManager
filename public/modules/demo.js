@@ -5,11 +5,26 @@ define('demo', ['jquery', 'util', 'multiSearch', 'pager'], function ($, util, mu
     var m = new multiSearch({
         path: '/demo'
     });
+    var pageMatch = location.href.match(/pg(\d+)/);
     var p = new pager({
         total: 400,
-        pageno: util.url.getUrlParam('page') || 1,
+        pageno: pageMatch && pageMatch[1] || 1, // util.url.getUrlParam('page') || 1,
         view: 2,
-        group: 4
+        group: 4,
+        pageRule: function (instance) {
+            return function (page) {
+                var url = location.href;
+                if (/pg(\d+)/.test(url)) {
+                    return url.replace(/pg(\d+)/, 'pg' + page);
+                }
+                if (m.conditions.level3 !== '') {
+                    return url.replace(m.conditions.level3, m.conditions.level3 + 'pg' + page);
+                }
+                else {
+                    return url.replace(/($|\?)/, '/pg' + page + '$1');
+                }
+            }
+        }
     });
 
     m.init();
