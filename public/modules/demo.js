@@ -7,7 +7,9 @@ define('demo', ['jquery', 'util', 'multiSearch', 'pager'], function ($, util, mu
     });
     var p = new pager({
         total: 400,
-        pageno: util.url.getUrlParam('page') || 1
+        pageno: util.url.getUrlParam('page') || 1,
+        view: 2,
+        group: 4
     });
 
     m.init();

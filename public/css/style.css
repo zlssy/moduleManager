@@ -31,7 +31,7 @@ a:hover { color: #24B73D; }
 
 .pager .pager-item:hover, .pager .pager-item.active, .pager .pager-btn:hover, .pager .pager-btn.active { border-color: #ff0000; }
 
-.pager .pager-input { width: 32px; border: 1px solid #e3e3e3; padding: 4px; }
+.pager .pager-input { width: 32px; border: 1px solid #e3e3e3; padding: 4px; text-align: center; }
 
 
 #multiSearch { line-height: 24px; min-width: 600px; }

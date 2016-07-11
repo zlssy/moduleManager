@@ -70,6 +70,9 @@ define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, 
                         d_demo.setValue(json.data.demo);
                         d_author.val(json.data.author);
                     }
+                    if(!d_path.parent().find('.btn-load-module').length) {
+                        d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
+                    }
                 }
                 else {
                     info('获取项目信息失败');
