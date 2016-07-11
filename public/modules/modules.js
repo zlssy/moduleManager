@@ -1,4 +1,4 @@
-define('modules', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
+define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dialog, moment) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         listItemTpl = $('#listItemTpl').html(),
@@ -66,7 +66,8 @@ define('modules', ['jquery', 'util', 'dialog'], function ($, util, dialog) {
                 if (0 === json.code) {
                     main.html(util.formatJson(containerTpl, {
                         module: json.data,
-                        htmlEncode: util.htmlEncode
+                        htmlEncode: util.htmlEncode,
+                        moment: moment
                     }));
 
                     /**

@@ -198,7 +198,6 @@ router.post('/module/save', function (req, res, next) {
         code = body.code,
         demo = body.demo,
         lastModify = body.lastModify,
-        createTime = util.getLocalTime(Date.now()),
         m;
 
     if (_id) {
@@ -208,7 +207,7 @@ router.post('/module/save', function (req, res, next) {
             author: author,
             code: code,
             demo: demo,
-            lastModify: util.getLocalTime(Date.now())
+            lastModify: Date.now()
         }, function (err) {
             if (err) {
                 console.log(err);
@@ -245,8 +244,7 @@ router.post('/module/save', function (req, res, next) {
             author: author,
             code: code,
             demo: demo,
-            lastModify: lastModify,
-            createTime: createTime
+            lastModify: lastModify
         });
 
         m.save(function (err, data) {
