@@ -7,7 +7,8 @@ define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
         main = $('#main-container'),
         listApi = '/api/module/list/',
         moduleApi = '/api/module/view/',
-        moduleEditUrl = '/module/edit?pid=' + pid + '&mid=';
+        moduleEditUrl = '/module/edit?pid=' + pid + '&mid=',
+        retryTimes = 10;
 
     $.ajax({
         url: listApi + pid,
@@ -69,19 +70,7 @@ define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
                         htmlEncode: util.htmlEncode,
                         moment: moment
                     }));
-
-                    /**
-                     * 设置默认选中项
-                     */
-                    ul.find('a[href]').each(function (i,v) {
-                        var $el = $(v),
-                            href = $el.attr('href');
-
-                        if(href.indexOf(mid) > -1){
-                            $el.addClass('active');
-                        }
-                    });
-
+                    activeLink();
                     syncHeight();
                 }
                 else {
@@ -113,5 +102,26 @@ define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
 
         ul.height(h);
         main.height(h);
+    }
+
+    function activeLink() {
+        var links = ul.find('a[href]');
+        /**
+         * 设置默认选中项
+         */
+        if(links.length) {
+            links.each(function (i, v) {
+                var $el = $(v),
+                    href = $el.attr('href');
+
+                if (href.indexOf(mid) > -1) {
+                    $el.addClass('active');
+                }
+            });
+        }
+        else if(retryTimes > 0) {
+            retryTimes--;
+            setTimeout(activeLink, 10);
+        }
     }
 });
