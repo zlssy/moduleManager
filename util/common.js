@@ -1,5 +1,7 @@
 var fs = require('fs');
 var path = require('path');
+var uglify = require('uglify-js');
+// var babel = require('babel');
 
 /**
  * 遍历目录，并判定制定文件是否存在 只读一层目录
@@ -80,4 +82,26 @@ exports.readFile = function (filename, cb) {
  */
 exports.getLocalTime = function (time) {
     return time - (new Date().getTimezoneOffset()) * 60000;
+};
+
+exports.compress = function (inFiles, outFile, cb) {
+    var files = Array.isArray(inFiles) ? inFiles : [inFiles], originalCode, distCode='', ast;
+    var compresser = uglify.Compressor({
+        sequences: true
+    });
+    try {
+        for (var i = 0, l = files.length; i < l; i++) {
+            originalCode = fs.readFileSync(inFiles[i], 'utf-8');
+            ast = uglify.parse(originalCode);
+            ast.figure_out_scope();
+            ast.compute_char_frequency();
+            ast.mangle_names();
+            ast = ast.transform(compresser);
+            distCode += ast.print_to_string() + ';';
+        }
+        exports.saveFile(outFile, distCode, cb);
+    }
+    catch (e){
+        cb(10, e);
+    }
 };

@@ -31,6 +31,9 @@
         <h1 class="center"><%%= module.name %></h1>
         <small class="date"><%%= module.author %> create @ <%%= moment(module.createTime).format('YYYY-MM-DD HH:mm:ss') %>. last modify @ <%%= moment(module.lastModify).format('YYYY-MM-DD HH:mm:ss')%></small>
         <div>URL：<%%= module.path %></div>
+        <div class="module-operate">
+            <button class="btn face compress">压缩</button>
+        </div>
         <pre><code><%%= htmlEncode(module.code).trim() %></code></pre>
     </div>
 </div>

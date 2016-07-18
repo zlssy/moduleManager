@@ -1,17 +1,17 @@
 define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, dialog, ace) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
-        projectApi = '/api/project/view/' + pid, // 项目接口
-        getApi = '/api/module/view/', // 模块获取接口
-        saveApi = '/api/module/save', // 模块保存接口
-        checkApi = '/api/module/check/', // 模块标识符校验接口
-        loadApi = '/api/module/load', // 载入模块源文件接口
+        projectApi = globalConfig.apiRoot + 'api/project/view/' + pid, // 项目接口
+        getApi = globalConfig.apiRoot + 'api/module/view/', // 模块获取接口
+        saveApi = globalConfig.apiRoot + 'api/module/save', // 模块保存接口
+        checkApi = globalConfig.apiRoot + 'api/module/check/', // 模块标识符校验接口
+        loadApi = globalConfig.apiRoot + 'api/module/load', // 载入模块源文件接口
         validate = 1, // 是否校验通过
         d_id = $('input[name=id]'),
         d_name = $('input[name=name]'),
         d_path = $('input[name=path]'),
         d_author = $('input[name=author]');
-    
+
     var d_code = ace.edit('code'),
         d_demo = ace.edit('demo');
 
@@ -70,7 +70,7 @@ define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, 
                         d_demo.setValue(json.data.demo);
                         d_author.val(json.data.author);
                     }
-                    if(!d_path.parent().find('.btn-load-module').length) {
+                    if (!d_path.parent().find('.btn-load-module').length) {
                         d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
                     }
                 }
@@ -91,7 +91,7 @@ define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, 
      * 绑定标识符事件
      */
     $('input[name=id]').on('blur', function () {
-        if(mid) return;
+        if (mid) return;
         var $el = $(this),
             v = $el.val();
         if (v) {
@@ -104,7 +104,7 @@ define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, 
                         d_path.val(getModuleBase() + v + '.js');
 
                         if (2 === validate) {
-                            if(!d_path.parent().find('.btn-load-module').length) {
+                            if (!d_path.parent().find('.btn-load-module').length) {
                                 d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');
                             }
                         }

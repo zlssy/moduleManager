@@ -5,7 +5,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var modelSchema = require('../models/model');
 var db = mongoose.createConnection('mongodb://127.0.0.1/legos');
-var moduleFolder = './public/modules'
+var moduleFolder = './public/modules';
+var distFolder = './public/dist';
 
 var Project = db.model('projects', modelSchema.projectSchema);
 var Module = db.model('modules', modelSchema.moduleSchema);
@@ -296,6 +297,51 @@ router.post('/module/load', function (req, res, next) {
         }
 
     });
+});
+
+/**
+ * 模块压缩
+ */
+router.post('/compress', function (req, res, next) {
+    var modules = req.body.modules.split(',');
+    var combName = req.body.combName || '';
+    var ms = [];
+    if(modules.length) {
+        modules.forEach(function (item) {
+            if (item && '' != (item = item.trim())) {
+                ms.push(moduleFolder+'/'+item+'.js');
+            }
+        });
+        if(ms.length === 1) combName = ms[0].replace(moduleFolder, distFolder);
+        console.log(ms, combName);
+        util.compress(ms, combName, function (result) {
+            console.log(result);
+            if(-1 === result){
+                return res.json({
+                    code: 3,
+                    msg: 'save file failure.'
+                });
+            }
+            else if( 1 === result){
+                return res.json({
+                    code: 0,
+                    msg: 'success'
+                });
+            }
+            else{
+                return res.json({
+                    code: 10,
+                    msg: 'server error.'
+                });
+            }
+        });
+    }
+    else{
+        return res.json({
+            code: 2,
+            msg: 'lost required parameter modules.'
+        });
+    }
 });
 
 /**

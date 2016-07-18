@@ -5,10 +5,12 @@ define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
         containerTpl = $('#containerTpl').html(),
         ul = $('#module-list'),
         main = $('#main-container'),
-        listApi = '/api/module/list/',
-        moduleApi = '/api/module/view/',
-        moduleEditUrl = '/module/edit?pid=' + pid + '&mid=',
-        retryTimes = 10;
+        listApi = globalConfig.apiRoot+'api/module/list/',
+        moduleApi = globalConfig.apiRoot+'api/module/view/',
+        moduleEditUrl = globalConfig.root+'module/edit?pid=' + pid + '&mid=',
+        moduleCompressApi = globalConfig.apiRoot+'api/compress',
+        retryTimes = 10,
+        moduleName = '';
 
     $.ajax({
         url: listApi + pid,
@@ -59,6 +61,31 @@ define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
             location.href = moduleEditUrl + mid;
         }
     });
+    main.on('click', '.module-operate > button', function (e) {
+        var $el = $(this);
+
+        if($el.hasClass('compress')){
+            $.ajax({
+                url: moduleCompressApi,
+                method: 'post',
+                data: {modules: moduleName},
+                success: function (json) {
+                    if(0 === json.code){
+                        dialog({
+                            title: '温馨提示',
+                            content: '压缩完成！'
+                        }).show();
+                    }
+                    else{
+                        info('压缩失败!');
+                    }
+                },
+                error: function (json) {
+                    info(json.msg);
+                }
+            });
+        }
+    });
 
     function loadModule(mid) {
         $.ajax({
@@ -70,6 +97,7 @@ define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
                         htmlEncode: util.htmlEncode,
                         moment: moment
                     }));
+                    moduleName = json.data.id;
                     activeLink();
                     syncHeight();
                 }
