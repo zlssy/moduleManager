@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var uglify = require('uglify-js');
-// var babel = require('babel');
 
 /**
  * 遍历目录，并判定制定文件是否存在 只读一层目录

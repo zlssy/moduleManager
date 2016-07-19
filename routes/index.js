@@ -22,17 +22,23 @@ router.get('/demo', function (req, res, next) {
 router.get(/\/module\/?([^\/]*)/, function (req, res, next) {
   var action = req.params[0] || '',
       title = {add: '添加模块', edit: '编辑模块'};
-  if (['add', 'edit'].indexOf(action) > -1) {
-    res.render('moduleadd', {
-      title: title[action],
-      action: action
-    });
+
+  if(req.url.indexOf('.js') > -1){
+    next();
   }
   else {
-    res.render('module', {
-      title: '模块管理',
-      action: action
-    });
+    if (['add', 'edit'].indexOf(action) > -1) {
+      res.render('moduleadd', {
+        title: title[action],
+        action: action
+      });
+    }
+    else {
+      res.render('module', {
+        title: '模块管理',
+        action: action
+      });
+    }
   }
 });
 

@@ -34,7 +34,7 @@ define('project', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dia
                         info('创建失败');
                     }
                     $('.create-panel').off();
-                    d.close();
+                    d.close().reomve();
                 },
                 error: function (json) {
                     console.log(json);
