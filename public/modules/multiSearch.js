@@ -51,31 +51,31 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             }
         },
         setDefault: function () {
-            var container;
-            ['level1', 'level2'].forEach(v => {
+            var container, self = this;
+            ['level1', 'level2'].forEach(function(v){
                 container = $('.' + v);
-                container.find('.active').removeClass(this.options.activeClass);
-                var activeItem = container.find('[' + this.options.key + '="' + (this.conditions[v] || '') + '"]');
-                activeItem.addClass(this.options.activeClass);
-                this.conditions[v+'Name'] = activeItem.html();
+                container.find('.active').removeClass(self.options.activeClass);
+                var activeItem = container.find('[' + self.options.key + '="' + (self.conditions[v] || '') + '"]');
+                activeItem.addClass(self.options.activeClass);
+                self.conditions[v+'Name'] = activeItem.html();
                 // 设置多维度level1, level2的默认值
                 if (container.length > 1) {
                     var activeIndex = $('.' + v).index(activeItem.parents('.' + v));
-                    for (let i = 0, l = container.length; i < l; i++) {
+                    for (var i = 0, l = container.length; i < l; i++) {
                         if (i !== activeIndex) {
-                            container.eq(i).find('[' + this.options.key + '=""]').addClass(this.options.activeClass);
+                            container.eq(i).find('[' + self.options.key + '=""]').addClass(self.options.activeClass);
                         }
                     }
                 }
 
                 /* url reset */
-                container.find('[' + this.options.key + ']').each((index, link)=> {
+                container.find('[' + self.options.key + ']').each(function(index, link) {
                     var $el = $(link);
                     var linKey = $el.data('key');
-                    var settings = $.extend(true, {}, this.conditions), url = this.baseUrl;
+                    var settings = $.extend(true, {}, self.conditions), url = self.baseUrl;
 
                     if ('level1' === v) {
-                        if (this.conditions.level1 && this.conditions.level2) {
+                        if (self.conditions.level1 && self.conditions.level2) {
                             // 解除level2的依赖
                             settings.level2 = '';
                         }
@@ -98,34 +98,34 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     else {
                         settings.level3 && (url += '/' + settings.level3);
                     }
-                    $el.attr('href', this.setUrl(url));
+                    $el.attr('href', self.setUrl(url));
                 });
             });
 
 
             var level3 = $('.level3');
-            level3.length && Array.from(level3).forEach(v=> {
+            level3.length && Array.from(level3).forEach(function(v) {
                 container = $(v);
-                var key = container.attr(this.options.levelKey).trim(),
-                    value = getLevel3ValueByKey.apply(this, [key]), activeItem;
+                var key = container.attr(self.options.levelKey).trim(),
+                    value = getLevel3ValueByKey.apply(self, [key]), activeItem;
 
-                container.find('.active').removeClass(this.options.activeClass);
+                container.find('.active').removeClass(self.options.activeClass);
                 if (value) {
-                    this.conditions.level3Map[key] = value;
-                    activeItem = container.find('[' + this.options.key + '=' + key + value + ']');
+                    self.conditions.level3Map[key] = value;
+                    activeItem = container.find('[' + self.options.key + '=' + key + value + ']');
                 }
                 else {
-                    this.conditions.level3Map[key] = '';
-                    activeItem = container.find('[' + this.options.key + '=""]');
+                    self.conditions.level3Map[key] = '';
+                    activeItem = container.find('[' + self.options.key + '=""]');
                 }
-                activeItem.addClass(this.options.activeClass);
-                this.conditions.level3Name[key] = activeItem.html();
+                activeItem.addClass(self.options.activeClass);
+                self.conditions.level3Name[key] = activeItem.html();
 
                 /* url reset */
-                container.find('[' + this.options.key + ']').each((index, link)=> {
+                container.find('[' + self.options.key + ']').each(function(index, link) {
                     var $el = $(link);
-                    var linKey = $el.attr(this.options.key);
-                    var settings = $.extend(true, {}, this.conditions), url = this.baseUrl;
+                    var linKey = $el.attr(self.options.key);
+                    var settings = $.extend(true, {}, self.conditions), url = self.baseUrl;
                     var kv = linKey.match(/(^[^\d]+)(\d+)/), kvk, kvv;
 
                     if (kv && kv.length === 3) {
@@ -134,7 +134,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                         settings.level3Map[kvk] = kvv;
                     }
                     else {
-                        kvk = $el.parents('.level3').attr(this.options.levelKey);
+                        kvk = $el.parents('.level3').attr(self.options.levelKey);
                         kvv = '';
                     }
                     // 重置level3
@@ -149,7 +149,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     if (settings.level3) {
                         url += '/' + settings.level3;
                     }
-                    $el.attr('href', this.setUrl(url));
+                    $el.attr('href', self.setUrl(url));
                 });
             });
         },
@@ -201,7 +201,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             }
             if(cond.level3) {
                 var condClone;
-                for (let k in cond.level3Map) {
+                for (var k in cond.level3Map) {
                     if (k && cond.level3Map[k]) {
                         condClone = $.extend(true, {}, cond);
                         updateLevel3(condClone, k, '');
