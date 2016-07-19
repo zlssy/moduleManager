@@ -1,4 +1,4 @@
-define('project', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dialog, moment) {
+define('_project', ['jquery', 'util', 'dialog', 'moment', '_header'], function ($, util, dialog, moment) {
     var createTpl = $('#createProjectTpl').html(),
         itemTpl = $('#projectItemTpl').html(),
         createButtonTpl = $('#createTpl').html(),

@@ -19,6 +19,14 @@ router.get('/demo', function (req, res, next) {
   res.redirect('/demo/');
 });
 
+router.get('/search/:key', function (req, res, next) {
+  var key = req.params['key'];
+  res.render('search', {
+    title: '搜索',
+    keys: key
+  });
+});
+
 router.get(/\/module\/?([^\/]*)/, function (req, res, next) {
   var action = req.params[0] || '',
       title = {add: '添加模块', edit: '编辑模块'};

@@ -1,4 +1,4 @@
-define('modules', ['jquery', 'util', 'dialog', 'moment'], function ($, util, dialog, moment) {
+define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function ($, util, dialog, moment) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         listItemTpl = $('#listItemTpl').html(),

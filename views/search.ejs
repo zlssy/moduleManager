@@ -1,0 +1,44 @@
+<%- include public/header %>
+<link href="/css/dialog.css" rel="stylesheet" />
+<%- include public/head %>
+<div id="wrap-container">
+    <div class="crumbs"><a href="/">我的项目</a></div>
+    <div id="module-container">
+        <div id="main-container">&nbsp;</div>
+        <aside><ul id="module-list"></ul></aside>
+    </div>
+    <button id="create">新建模块</button>
+</div>
+<%- include public/copyright %>
+<script id="listItemTpl" type="text/html">
+    <%%
+    var item;
+    for(var i=0, l=list.length;i<l;i++){
+        item = list[i];
+    %>
+    <li><a href="/module?pid=<%%=pid%>&mid=<%%=item._id%>"><%%= item.name %></a></li>
+    <%% } %>
+</script>
+<script id="containerTpl" type="text/html">
+    <ul class="tab">
+        <li class="active">Demo</li>
+        <li>介绍</li>
+        <li>编辑</li>
+    </ul>
+    <div class="content">
+        <div><%%= module.demo %></div>
+        <div style="display: none;">
+            <h1 class="center"><%%= module.name %></h1>
+            <small class="date"><%%= module.author %> create @ <%%= moment(module.createTime).format('YYYY-MM-DD HH:mm:ss') %>. last modify @ <%%= moment(module.lastModify).format('YYYY-MM-DD HH:mm:ss')%></small>
+            <div>URL：<%%= module.path %></div>
+            <div class="module-operate">
+                <button class="btn face compress">压缩</button>
+            </div>
+            <pre><code><%%= htmlEncode(module.code).trim() %></code></pre>
+        </div>
+    </div>
+</script>
+<script>
+    require(['_search']);
+</script>
+<%- include public/footer %>

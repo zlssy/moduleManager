@@ -1,4 +1,4 @@
-define('demo', ['jquery', 'util', 'multiSearch', 'pager'], function ($, util, multiSearch, pager) {
+define('_demo', ['jquery', 'util', 'multiSearch', 'pager', '_header'], function ($, util, multiSearch, pager) {
     var wrap = $('#wrap-container');
     var condition_container = $('.cur-condition');
     var template = $('#removeItemTpl').html();

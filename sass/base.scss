@@ -25,14 +25,30 @@ aside{
 header{
   height: 80px;
   background: $lightGreen;
+  color: white;
 
   & > .logo{
     font-size: 2rem;
     font-weight: bold;
-    color: white;
     line-height: 80px;
     padding: 0 0 0 12px;
   }
+
+  .head-search{
+    position: absolute;
+    left: 410px;
+    top: 26px;
+
+    .keys{
+      padding-left: 8px;
+      line-height: 24px;
+      border: 1px solid $gray;
+    }
+    .search{
+      padding: 3px 12px;
+    }
+  }
+
 }
 
 footer{

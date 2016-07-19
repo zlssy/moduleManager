@@ -1,4 +1,4 @@
-define('moduleadd', ['jquery', 'util', 'dialog', 'ace/ace'], function ($, util, dialog, ace) {
+define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', '_header'], function ($, util, dialog, ace) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         projectApi = globalConfig.apiRoot + 'api/project/view/' + pid, // 项目接口
