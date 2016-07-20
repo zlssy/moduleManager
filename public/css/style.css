@@ -21,6 +21,10 @@ footer .copyright { padding: 12px 0; line-height: 24px; text-align: center; }
 
 button { line-height: 24px; padding: 8px 12px; background: rgba(0, 0, 0, 0.2); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-family: '微软雅黑', '宋体', Arial; }
 
+button.small { padding: 0; }
+
+button.normal { border-radius: 0; }
+
 button.face { background: #24B73D; }
 
 button.face:hover { background: rgba(36, 183, 61, 0.8); }
@@ -59,6 +63,8 @@ a:hover { color: #24B73D; }
 #multiSearch .cur-condition a:after { display: inline-block; width: 24px; content: 'X'; background: #31c05d; text-align: center; margin-left: 4px; }
 
 #multiSearch .cur-condition a:hover:after { color: #fff; }
+
+#multiSearch input.small { width: 40px; }
 
 
 .project-list { padding: 2px; overflow: hidden; zoom: 1; }

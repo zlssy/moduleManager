@@ -21,7 +21,7 @@ define('_demo', ['jquery', 'util', 'multiSearch', 'pager', '_header'], function 
                     return url.replace(m.conditions.level3, m.conditions.level3 + 'pg' + page);
                 }
                 else {
-                    return url.replace(/($|\?)/, '/pg' + page + '$1');
+                    return url.replace(/($|\?)/, 'pg' + page + '$1');
                 }
             }
         }

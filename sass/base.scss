@@ -72,6 +72,12 @@ button{
   font-size: 14px;
   font-family: '微软雅黑', '宋体', Arial;
 
+  &.small{
+    padding: 0;
+  }
+  &.normal{
+    border-radius: 0;
+  }
   &.face{
     background: $lightGreen;
 
