@@ -66,6 +66,16 @@ a:hover { color: #24B73D; }
 
 #multiSearch input.small { width: 40px; }
 
+.demo-method { line-height: 24px; }
+
+.demo-method > li { list-style: none; border-bottom: 1px dashed #ddd; }
+
+.demo-method > li > h4 { color: #31c05d; }
+
+.demo-method > li > .demo-options { padding: 0 48px; }
+
+.demo-method > li > .demo-return { padding-left: 48px; margin-top: 24px; color: #EA9B06; }
+
 
 .project-list { padding: 2px; overflow: hidden; zoom: 1; }
 

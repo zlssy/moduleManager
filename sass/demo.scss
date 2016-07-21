@@ -59,3 +59,24 @@
   }
 
 }
+
+.demo-method{
+  line-height: 24px;
+
+  > li{
+    list-style: none;
+    border-bottom: 1px dashed $gray;
+
+    > h4{
+      color: $greenColor;
+    }
+    > .demo-options{
+      padding: 0 48px;
+    }
+    > .demo-return{
+      padding-left: 48px;
+      margin-top: 24px;
+      color: $demoReturn;
+    }
+  }
+}

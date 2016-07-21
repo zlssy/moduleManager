@@ -298,8 +298,8 @@ define(['jquery'], function($) {
      */
     function once(fn) {
         var run = false;
-        return function() {
-            !run && (run = !run, fn.apply(arguments[0] || null, Array.prototype.slice.call(arguments, 1)));
+        return function () {
+            !run && (run = !run, fn.call(arguments[0] || null, Array.prototype.slice.call(arguments, 1)));
         }
     }
 
