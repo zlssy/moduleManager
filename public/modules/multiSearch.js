@@ -175,7 +175,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             });
         },
         log: function () {
-            window.console && console.log.apply(console, arguments);
+            util.log(arguments);
         },
         setPath: function (path) {
             this.options.path = path;
@@ -275,7 +275,6 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
 
     function getLevel3ValueByKey(key) {
         var d = this.conditions.level3.match(new RegExp(key + '([\\d-]+)'));
-        console.log(d);
         if (d && d.length === 2) {
             return d[1];
         }

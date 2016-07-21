@@ -26,6 +26,14 @@ define('_demo', ['jquery', 'util', 'multiSearch', 'pager', '_header'], function 
             }
         }
     });
+    var p2 = new pager({
+        total: 300,
+        group: 3,
+        useAjax: true,
+        onpage: function(pager){
+            util.log('Load the data of page '+pager.pageno);
+        }
+    });
 
     m.init();
     
@@ -37,5 +45,5 @@ define('_demo', ['jquery', 'util', 'multiSearch', 'pager', '_header'], function 
         }));        
     }
 
-    $('#list').after(p.get());
+    $('#list').after(p.get()).after(p2.get());
 });
