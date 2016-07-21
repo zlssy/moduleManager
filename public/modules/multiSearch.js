@@ -23,7 +23,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
 
                 if (l3 && l3.indexOf('rs')>-1) {
                     var key='';
-                    l3 = l3.replace(/(rs[^a-z0-9-]+)/, function (v) {
+                    l3 = l3.replace(/(rs[^a-z-]+)/, function (v) {
                         key = v;
                         return ''
                     });
@@ -51,11 +51,11 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
 
             switch (conditions.length) {
                 case 1:
-                    this.conditions[includeNumber(conditions[0]) ? 'level3' : 'level1'] = conditions[0];
+                    this.conditions[isLevel3(conditions[0]) ? 'level3' : 'level1'] = conditions[0];
                     break;
                 case 2:
                     this.conditions.level1 = conditions[0];
-                    this.conditions[includeNumber(conditions[1]) ? 'level3' : 'level2'] = conditions[1];
+                    this.conditions[isLevel3(conditions[1]) ? 'level3' : 'level2'] = conditions[1];
                     break;
                 case 3:
                     this.conditions.level1 = conditions[0];
@@ -168,6 +168,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                         }
                     }
                     if (settings.level3) {
+                        self.resetCondition && self.resetCondition(settings);
                         url += '/' + settings.level3;
                     }
                     $el.attr('href', self.setUrl(url));
@@ -255,7 +256,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
         },
         bindEvents: function () {
             var self = this;
-            $('.level3').on('click', 'button input[type=button]', function (e) {
+            $('.level3').on('click', 'button, input[type=button]', function (e) {
                 var $el = $(this),
                     key = $el.parents('.level3').data('key'),
                     vd = $el.siblings('input'),
@@ -271,6 +272,13 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
 
     function includeNumber(str) {
         return /\d+/.test(str);
+    }
+
+    function isLevel3(str) {
+        if(includeNumber(str)){
+            return true;
+        }
+        return /rs[^a-z-]+/.test(str);
     }
 
     function getLevel3ValueByKey(key) {
