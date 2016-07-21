@@ -6,6 +6,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         ul = $('#module-list'),
         main = $('#main-container'),
         listApi = globalConfig.apiRoot+'api/module/list/',
+        viewProjectApi = globalConfig.apiRoot+'api/project/view/',
         moduleApi = globalConfig.apiRoot+'api/module/view/',
         moduleEditUrl = globalConfig.root+'module/edit?pid=' + pid + '&mid=',
         moduleCompressApi = globalConfig.apiRoot+'api/compress',
@@ -24,6 +25,9 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     }));
                     if (!mid) {
                         loadModule(mid = json.data[0]._id);
+                    }
+                    else{
+                        activeLink();
                     }
                 }
                 else {
@@ -84,6 +88,21 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     info(json.msg);
                 }
             });
+        }
+    });
+
+    $.ajax({
+        url:viewProjectApi+pid,
+        success: function (json) {
+            if(0 === json.code){
+                $('#myProjectName').html(json.data.name);
+            }
+            else {
+                util.log('load project failure.');
+            }
+        },
+        error: function (json) {
+            util.log(json.msg);
         }
     });
 

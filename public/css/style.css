@@ -70,7 +70,7 @@ a:hover { color: #24B73D; }
 
 .demo-method > li { list-style: none; border-bottom: 1px dashed #ddd; }
 
-.demo-method > li > h4 { color: #31c05d; }
+.demo-method > li h4 { color: #31c05d; }
 
 .demo-method > li > .demo-options { padding: 0 48px; }
 
@@ -176,3 +176,5 @@ a:hover { color: #24B73D; }
 .crumbs { margin: 0 0 12px 28px; color: #ddd; }
 
 .crumbs a:first-child:before { content: ' ♔ '; }
+
+.crumbs span { color: #24B73D; }
