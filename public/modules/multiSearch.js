@@ -18,6 +18,19 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             level3Map: {},
             level3Name: {}
         };
+        this.resetCondition = this.options.resetCondition || function (conds) {
+                var l3 = decodeURIComponent(conds.level3);
+
+                if (l3 && l3.indexOf('rs')>-1) {
+                    var key='';
+                    l3 = l3.replace(/(rs[^a-z0-9-]+)/, function (v) {
+                        key = v;
+                        return ''
+                    });
+                    l3+=key;
+                }
+                conds.level3 = l3;
+            };
     }
 
     multiSearch.prototype = {
@@ -50,6 +63,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     this.conditions.level3 = conditions[2];
                     break;
             }
+            this.resetCondition && this.resetCondition(this.conditions);
         },
         setDefault: function () {
             var container, self = this;
@@ -121,7 +135,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                 }
                 activeItem.addClass(self.options.activeClass);
                 self.conditions.level3Name[key] = activeItem.html() || (self.conditions.level3Map[key]+container.find('.unit').html());
-                if(value.indexOf('-')>-1){
+                if(value && value.indexOf('-')>-1){
                     var vs = value.split('-');
                     var vd = container.find('input');
                     vd.eq(0) && vd.eq(0).val(vs[0] || '');
