@@ -1,0 +1,38 @@
+@import "colors";
+
+#search-container {
+  padding: 8px 32px;
+  .search-list {
+    line-height: 24px;
+
+    > li {
+
+      .title{
+
+        a{
+          color: $pagerItemHover;
+          &:hover{
+            color: $demoReturn;
+          }
+        }
+      }
+      .search-desc {
+        height: 48px;
+        border: 1px dashed $demoReturn;
+        padding: 6px;
+        overflow: hidden;
+
+        &.auto {
+          height: auto;
+        }
+      }
+      .search-expando {
+        width: 80px;
+        margin: 0 auto;
+        text-align: center;
+        border: solid 1px $gray;
+        cursor: pointer;
+      }
+    }
+  }
+}

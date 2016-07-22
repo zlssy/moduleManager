@@ -9,7 +9,7 @@ var sass = require('gulp-sass');
 * compressed：压缩后的css代码。
 */
 gulp.task('sass', function () {
-    gulp.src(['sass/base.scss', 'sass/[^base]*.scss'])
+    gulp.src(['sass/base.scss', 'sass/!(base)*.scss'])
         .pipe(sass({
             outputStyle: 'compact'
         }).on('error', sass.logError))

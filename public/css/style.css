@@ -178,3 +178,17 @@ a:hover { color: #24B73D; }
 .crumbs a:first-child:before { content: ' ♔ '; }
 
 .crumbs span { color: #24B73D; }
+
+#search-container { padding: 8px 32px; }
+
+#search-container .search-list { line-height: 24px; }
+
+#search-container .search-list > li .title a { color: #74AB0A; }
+
+#search-container .search-list > li .title a:hover { color: #EA9B06; }
+
+#search-container .search-list > li .search-desc { height: 48px; border: 1px dashed #EA9B06; padding: 6px; overflow: hidden; }
+
+#search-container .search-list > li .search-desc.auto { height: auto; }
+
+#search-container .search-list > li .search-expando { width: 80px; margin: 0 auto; text-align: center; border: solid 1px #ddd; cursor: pointer; }

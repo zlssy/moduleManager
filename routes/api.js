@@ -1,10 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var util = require('../util/common');
+var log4js = require('log4js');
+var log = log4js.getLogger('api');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var modelSchema = require('../models/model');
-var db = mongoose.createConnection('mongodb://127.0.0.1/legos');
+var config  = require('../config.json').mongodb;
+var connStr = 'mongodb://'+config.server+':'+config.port+'/'+config.db;
+var connOpt = {};
+config.user && (connOpt.user = config.user);
+config.pwd && (connOpt.pass = config.pwd);
+var db = mongoose.createConnection(connStr, connOpt);
 var moduleFolder = './public/modules';
 var distFolder = './public/dist';
 
@@ -17,7 +24,7 @@ var Module = db.model('modules', modelSchema.moduleSchema);
 router.get('/project/list', function (req, res, next) {
     Project.find({}, function (err, data) {
         if(err){
-            console.log(err);
+            log.log('ERROR',err);
             return res.json({
                 code: 1,
                 msg: 'server error.'
@@ -43,7 +50,7 @@ router.get('/project/view/:pid', function (req, res, next) {
     }
     Project.findById(pid, function (err, data) {
         if(err){
-            console.log(err);
+            log.log('ERROR',err);
             return res.json({
                 code: 2,
                 msg: err.message
@@ -71,7 +78,7 @@ router.post('/project/add', function (req, res, next) {
         });
         p.save(function (err) {
             if (err) {
-                console.log(err);
+                log.log('ERROR',err);
                 return res.json({
                     code: 1,
                     msg: JSON.stringify(err)
@@ -104,7 +111,7 @@ router.get('/module/list/:pid', function (req, res, next) {
     }
     Module.find({pid: pid}, function (err, data) {
         if(err){
-            console.log(err);
+            log.log('ERROR',err);
             return res.json({
                 code: 2,
                 msg: 'server error.'
@@ -126,7 +133,7 @@ router.get('/module/view/:mid', function (req, res, next) {
     if(mid){
         Module.findById(mid, function (err, data) {
             if(err){
-                console.log(err);
+                log.log('ERROR',err);
                 return res.json({
                     code: 2,
                     msg: err.message
@@ -211,7 +218,7 @@ router.post('/module/save', function (req, res, next) {
             lastModify: Date.now()
         }, function (err) {
             if (err) {
-                console.log(err);
+                log.log('ERROR',err);
                 return res.json({
                     code: 10,
                     msg: err.message
@@ -250,7 +257,7 @@ router.post('/module/save', function (req, res, next) {
 
         m.save(function (err, data) {
             if (err) {
-                console.log(err);
+                log.log('ERROR',err);
                 return res.json({
                     code: 1,
                     msg: err.message
@@ -313,10 +320,10 @@ router.post('/compress', function (req, res, next) {
             }
         });
         if(ms.length === 1) combName = ms[0].replace(moduleFolder, distFolder);
-        console.log(ms, combName);
+
         util.compress(ms, combName, function (result) {
-            console.log(result);
             if(-1 === result){
+                log.log('INFO', 'compress module failure when save the file.');
                 return res.json({
                     code: 3,
                     msg: 'save file failure.'
@@ -345,6 +352,28 @@ router.post('/compress', function (req, res, next) {
 });
 
 /**
+ * 搜索接口
+ */
+router.post('/search', function (req, res, next) {
+    var key = req.body.keys;
+    if(key){
+        Module.find({name: new RegExp('.*?'+key+'.*?')}, function (err, data) {
+            if(err){
+                log.log('ERROR',err);
+                return res.json({
+                    code: 1,
+                    msg: err.message
+                });
+            }
+            return res.json({
+                code: 0,
+                data: data
+            });
+        });
+    }
+});
+
+/**
  * 校验模块标识符是否可用
  * @param id  标识符
  * @param cb  处理函数
@@ -353,7 +382,7 @@ function checkModuleId(id, cb) {
     // 查库
     Module.find({id: id}, function (err, data) {
         if (err) {
-            console.log(err);
+            log.log('ERROR',err);
             return cb(-2); // 出错
         }
         if (data.length) {
