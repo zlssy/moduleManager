@@ -70,7 +70,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                 if (v1 && v2) {
                     if ('-' === v2[0] || '-' === v2[v2.length - 1]) {
                         var defined = $('[' + self.options.levelKey + '="' + v1 + '"]').data('default');
-                        var dv = $.extend(self.defaultValue, defined ? defined.split(',') : []);
+                        var dv = $.extend(self.defaultValue, defined ? defined.split(/,|-/) : []);
                         if ('-' === v2[0]) {
                             v2 = dv[0] + v2;
                         }
@@ -285,7 +285,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     v2 = vd.eq(1).val();
                 if (key && v1 > -1 && v2 > -1) {
                     var defaultValue = $el.parents('.level3').data('default');
-                    var dv = $.extend(self.defaultValue, defaultValue ? defaultValue.split(',') : []);
+                    var dv = $.extend(self.defaultValue, defaultValue ? defaultValue.split(/,|-/) : []);
 
                     self.updateLevel3(self.conditions, key, (v1 || dv[0]) + '-' + (v2 || dv[1]));
                     location.href = self.getCurrentConditionUrl();
