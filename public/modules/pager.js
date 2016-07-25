@@ -63,11 +63,12 @@ define('pager',['jquery', 'util'], function ($, util) {
         this.total = (opt.total || 0) - 0;
         this.options = opt;
         this.guid = ++guid;
+        this.empty = false;
         if (typeof opt.onpage === 'function') this.onpage = opt.onpage;
         if (!this.total || 0 === this.total || 0 === this.pagesize) {
-            throw new Error('Lost total record or page size is zero.');
+            this.empty = true;
         }
-        this.init.apply(this);
+        !this.empty && this.init.apply(this);
     }
 
     Pager.prototype = {
@@ -111,7 +112,9 @@ define('pager',['jquery', 'util'], function ($, util) {
          */
         get: function () {
             var html = [];
-
+            if(this.empty){
+                return this.options.emptyContent || '';
+            }
             if (this.page > 1) {
                 html.push('<div class="' + this.options.containerClass + '" data-pager="' + this.guid + '">');
                 html.push(this.getPager());

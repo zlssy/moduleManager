@@ -3,7 +3,8 @@ define('_demo', ['jquery', 'util', 'multiSearch', 'pager', '_header'], function 
     var condition_container = $('.cur-condition');
     var template = $('#removeItemTpl').html();
     var m = new multiSearch({
-        path: '/demo'
+        path: '/demo',
+        useDefault: true
     });
     var pageMatch = location.href.match(/pg(\d+)/);
     var p = new pager({
