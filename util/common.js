@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var uglify = require('uglify-js');
+var babel = require('babel-core');
 
 /**
  * 遍历目录，并判定制定文件是否存在 只读一层目录
@@ -84,13 +85,22 @@ exports.getLocalTime = function (time) {
 };
 
 exports.compress = function (inFiles, outFile, cb) {
-    var files = Array.isArray(inFiles) ? inFiles : [inFiles], originalCode, distCode='', ast;
+    var files = Array.isArray(inFiles) ? inFiles : [inFiles], originalCode, distCode='', ast, m;
     var compresser = uglify.Compressor({
         sequences: true
     });
     try {
         for (var i = 0, l = files.length; i < l; i++) {
             originalCode = fs.readFileSync(inFiles[i], 'utf-8');
+            originalCode = originalCode.replace(/^\s+|\s+$/, '');
+            m = originalCode.match(/^(define\([^{]+\{)((?:\s|\S)+)}\);?$/m);
+            if(m && m.length >= 3) {
+                m[2] = babel.transform(m[2], {
+                    presets: ['es2015']
+                }).code;
+                originalCode = m[1]+m[2]+'})';
+            }
+            console.log(originalCode);
             ast = uglify.parse(originalCode);
             ast.figure_out_scope();
             ast.compute_char_frequency();
