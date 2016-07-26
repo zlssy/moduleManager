@@ -100,7 +100,6 @@ exports.compress = function (inFiles, outFile, cb) {
                 }).code;
                 originalCode = m[1]+m[2]+'})';
             }
-            console.log(originalCode);
             ast = uglify.parse(originalCode);
             ast.figure_out_scope();
             ast.compute_char_frequency();
