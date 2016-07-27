@@ -111,7 +111,7 @@ router.get('/module/list/:pid', function (req, res, next) {
             msg: 'lost the required parameter project id.'
         });
     }
-    Module.find({pid: pid}, function (err, data) {
+    Module.find({pid: pid},{_id:1, id: 1, name: 1, pid:1}, function (err, data) {
         if(err){
             log.log('ERROR',err);
             return res.json({
@@ -396,7 +396,7 @@ router.get('/module/dependencies/:mid', function (req, res, next) {
                 var myDeps = data.code.match(moduleDependenciesReg);
                 if (myDeps) {
                     var myDepsList = (myDeps[1] && myDeps[1].split(',') || []).map(function (v) {
-                        return v.replace(/'|"/g, '');
+                        return v.replace(/\s*'|\s*"/g, '');
                     });
                     if (myDepsList.length) {
                         getDependencies(myDepsList, deps, function (ret, data) {
@@ -476,7 +476,7 @@ function getDependencies(depList, deps, cb) {
                     var mDeps = m.code.match(moduleDependenciesReg);
                     if (mDeps) {
                         var mDepList = (mDeps[1] && mDeps[1].split(',') || []).map(function (v) {
-                            return v.replace(/'|"/g, '');
+                            return v.replace(/\s*'|\s*"/g, '');
                         });
                         mDepList.length && (curModuleDeps = curModuleDeps.concat(mDepList));
                     }
