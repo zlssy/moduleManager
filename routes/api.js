@@ -421,6 +421,12 @@ router.get('/module/dependencies/:mid', function (req, res, next) {
                         });
                     }
                 }
+                else{
+                    return res.json({
+                        code: 0,
+                        data: deps
+                    });
+                }
             }
             else {
                 return res.json({

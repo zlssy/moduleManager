@@ -206,7 +206,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             return this.options.path;
         },
         setUrl: function (url) {
-            url +='/';
+            url += '/';
             return url + this.searchStr + (this.hashStr ? '#' + this.hashStr : '');
         },
         getCondition: function () {
@@ -233,7 +233,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     // 要移除level2
                     link = url;
                     if (cond.level3) {
-                        link = '/' + cond.level3;
+                        link = url + '/' + cond.level3;
                     }
                     // 记录关键字与移除关键字的连接
                     keys.push({
