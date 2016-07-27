@@ -92,14 +92,17 @@ exports.compress = function (inFiles, outFile, cb) {
     try {
         for (var i = 0, l = files.length; i < l; i++) {
             originalCode = fs.readFileSync(inFiles[i], 'utf-8');
-            originalCode = originalCode.replace(/^\s+|\s+$/, '');
-            m = originalCode.match(/^(define\([^{]+\{)((?:\s|\S)+)}\);?$/m);
-            if(m && m.length >= 3) {
-                m[2] = babel.transform(m[2], {
-                    presets: ['es2015']
-                }).code;
-                originalCode = m[1]+m[2]+'})';
-            }
+            // originalCode = originalCode.replace(/^\s+|\s+$/, '');
+            // m = originalCode.match(/^(define\([^{]+\{)((?:\s|\S)+)}\);?$/m);
+            // if(m && m.length >= 3) {
+            //     m[2] = babel.transform(m[2], {
+            //         presets: ['es2015']
+            //     }).code;
+            //     originalCode = m[1]+m[2]+'})';
+            // }
+            originalCode = babel.transform(originalCode, {
+                presets: ['es2015']
+            }).code;
             ast = uglify.parse(originalCode);
             ast.figure_out_scope();
             ast.compute_char_frequency();
@@ -110,6 +113,7 @@ exports.compress = function (inFiles, outFile, cb) {
         exports.saveFile(outFile, distCode, cb);
     }
     catch (e){
+        console.log(e);
         cb(10, e);
     }
 };

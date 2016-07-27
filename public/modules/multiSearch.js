@@ -206,6 +206,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             return this.options.path;
         },
         setUrl: function (url) {
+            url +='/';
             return url + this.searchStr + (this.hashStr ? '#' + this.hashStr : '');
         },
         getCondition: function () {
