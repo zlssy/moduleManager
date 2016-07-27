@@ -55,16 +55,16 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         var $el = $(this);
         var index = main.find('.tab > li').index($el);
 
-        if (!$el.hasClass('active')) {
-            main.find('.content > div').hide().eq(index).show();
-            main.find('.tab > li').removeClass('active').eq(index).addClass('active');
-            syncHeight();
-        }
         if(1 === index && demoCode && main.find('.content > div').eq(index).html() === ""){
             main.find('.content > div').eq(index).html(demoCode);
         }
         if (2 === index && mid) {
             location.href = moduleEditUrl + mid;
+        }
+        if (!$el.hasClass('active')) {
+            main.find('.content > div').hide().eq(index).show();
+            main.find('.tab > li').removeClass('active').eq(index).addClass('active');
+            syncHeight();
         }
     });
     main.on('click', '.module-operate > button', function (e) {

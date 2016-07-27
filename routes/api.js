@@ -18,7 +18,7 @@ var distFolder = './public/dist';
 var Project = db.model('projects', modelSchema.projectSchema);
 var Module = db.model('modules', modelSchema.moduleSchema);
 
-var moduleDependenciesReg = /define\s*\([^\[]*(?:\[([^\]]+)])?\s*(?:[,|(function)])/m;
+var moduleDependenciesReg = /define\s*\([^\[]*(?:\[([^\]]+)])?\s*(?:,\s*function)/m;
 
 /**
  * 获取项目列表
