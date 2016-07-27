@@ -21,21 +21,25 @@
 </script>
 <script id="containerTpl" type="text/html">
 <ul class="tab">
-    <li class="active">Demo</li>
-    <li>介绍</li>
+    <li class="active">介绍</li>
+    <li>Demo</li>
     <li>编辑</li>
 </ul>
 <div class="content">
-    <div><%%= module.demo %></div>
-    <div style="display: none;">
+    <div>
         <h1 class="center"><%%= module.name %></h1>
         <small class="date"><%%= module.author %> create @ <%%= moment(module.createTime).format('YYYY-MM-DD HH:mm:ss') %>. last modify @ <%%= moment(module.lastModify).format('YYYY-MM-DD HH:mm:ss')%></small>
         <div>URL：<%%= module.path %></div>
         <div class="module-operate">
             <button class="btn face compress">压缩</button>
         </div>
+        <div class="module-dependencies">
+            <h3>模块依赖：</h3>
+            <ul></ul>
+        </div>
         <pre><code><%%= htmlEncode(module.code).trim() %></code></pre>
     </div>
+    <div style="display: none;"></div>
 </div>
 </script>
 <script>

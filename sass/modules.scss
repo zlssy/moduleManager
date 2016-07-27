@@ -97,6 +97,21 @@ $asideWidth: 200;
     .module-operate{
       margin: 36px 0;
     }
+    .module-dependencies{
+      ul{
+        li{
+          list-style: none;
+          display: inline-block;
+          padding: 4px 8px;
+          margin: 4px 6px;
+          border: 1px solid $lightGreen;
+
+          &.lost{
+            border-color: $red;
+          }
+        }
+      }
+    }
   }
 
   #module-list{
@@ -148,7 +163,7 @@ $asideWidth: 200;
       text-align: right;
     }
 
-    input[type=text]{
+    input[type=text], textarea[name=code], textarea[name=demo], ul{
       width: 70%;
       padding-left: 4px;
       height: 24px;
@@ -162,15 +177,23 @@ $asideWidth: 200;
     }
 
     textarea[name=code], textarea[name=demo]{
-      width: 70%;
-      padding-left: 4px;
       min-width: 200px;
       height: 30%;
       min-height: 200px;
-      border: 1px solid $gray;
+    }
 
-      &.error{
-        border: solid 1px $red;
+    ul{
+      display: inline-block;
+      border:none;
+      li{
+        list-style: none;
+        display: inline-block;
+        margin: 0 4px;
+        padding: 2px 6px;
+        border: 1px solid $gray;
+        &.lost{
+          border-color: $red;
+        }
       }
     }
 

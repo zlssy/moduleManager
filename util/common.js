@@ -113,3 +113,11 @@ exports.compress = function (inFiles, outFile, cb) {
         cb(10, e);
     }
 };
+
+exports.uniq = function (arr) {
+    var ret = [];
+    arr.forEach(function (v) {
+        ret.indexOf(v) < 0 && ret.push(v);
+    });
+    return ret;
+};

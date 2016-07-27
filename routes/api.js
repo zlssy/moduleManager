@@ -18,6 +18,8 @@ var distFolder = './public/dist';
 var Project = db.model('projects', modelSchema.projectSchema);
 var Module = db.model('modules', modelSchema.moduleSchema);
 
+var moduleDependenciesReg = /define\s*\([^\[]*(?:\[([^\]]+)])?\s*(?:[,|(function)])/m;
+
 /**
  * 获取项目列表
  */
@@ -374,6 +376,63 @@ router.post('/search', function (req, res, next) {
 });
 
 /**
+ * 模块依赖分析
+ */
+router.get('/module/dependencies/:mid', function (req, res, next) {
+    var mid = req.params['mid'], deps={};
+    deps.exists = [];
+    deps.lostes = [];
+    deps.map = {};
+    if(mid) {
+        Module.findById(mid, function (err, data) {
+            if (err) {
+                log.log("ERROR", err);
+                return res.json({
+                    code: 1,
+                    msg: err.message
+                });
+            }
+            if (data && data.code) {
+                var myDeps = data.code.match(moduleDependenciesReg);
+                if (myDeps) {
+                    var myDepsList = (myDeps[1] && myDeps[1].split(',') || []).map(function (v) {
+                        return v.replace(/'|"/g, '');
+                    });
+                    if (myDepsList.length) {
+                        getDependencies(myDepsList, deps, function (ret, data) {
+                            if(ret) {
+                                return res.json({
+                                    code: 0,
+                                    data: data
+                                });
+                            }
+                            else{
+                                return res.json({
+                                    code: 3,
+                                    msg: data.message
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        return res.json({
+                            code: 0,
+                            data: deps
+                        });
+                    }
+                }
+            }
+            else {
+                return res.json({
+                    code: 2,
+                    msg: 'lost the module.'
+                });
+            }
+        });
+    }
+});
+
+/**
  * 校验模块标识符是否可用
  * @param id  标识符
  * @param cb  处理函数
@@ -393,6 +452,55 @@ function checkModuleId(id, cb) {
             util.fileInFolder(id + '.js', moduleFolder, cb);
         }
     });
+}
+
+/**
+ * 获取模块组的依赖列表
+ * @param depList  模块组
+ * @param deps  依赖表 ， Ref
+ * @param cb    回调函数
+ */
+function getDependencies(depList, deps, cb) {
+    depList = depList.filter(function (dep) {
+        return !(deps.exists.indexOf(dep) > -1 || deps.lostes.indexOf(dep) > -1);
+    });
+    if (depList.length) {
+        Module.find({id: new RegExp(depList.join('|'))}, function (err, data) {
+            if (err) {
+                log.log('ERROR', err);
+                return cb(false, err);
+            }
+            if (data.length) {
+                var curModuleDeps = [];
+                data.forEach(function (m) {
+                    var mDeps = m.code.match(moduleDependenciesReg);
+                    if (mDeps) {
+                        var mDepList = (mDeps[1] && mDeps[1].split(',') || []).map(function (v) {
+                            return v.replace(/'|"/g, '');
+                        });
+                        mDepList.length && (curModuleDeps = curModuleDeps.concat(mDepList));
+                    }
+                    deps.exists.push(m.id);
+                    deps.map[m.id] = {
+                        name: m.name,
+                        mid: m._id,
+                        pid: m.pid
+                    };
+                    depList.splice(depList.indexOf(m.id), 1);
+                });
+                depList.length && (deps.lostes = deps.lostes.concat(depList));
+                curModuleDeps = util.uniq(curModuleDeps);
+                getDependencies(curModuleDeps, deps, cb);
+            }
+            else{
+                deps.lostes = deps.lostes.concat(depList);
+                getDependencies([], deps, cb);
+            }
+        });
+    }
+    else {
+        cb(true, deps);
+    }
 }
 
 module.exports = router;

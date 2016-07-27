@@ -1,4 +1,4 @@
-define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', '_header'], function ($, util, dialog, ace) {
+define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header'], function ($, util, dialog, ace, moment) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         projectApi = globalConfig.apiRoot + 'api/project/view/' + pid, // 项目接口
@@ -6,6 +6,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', '_header'], functio
         saveApi = globalConfig.apiRoot + 'api/module/save', // 模块保存接口
         checkApi = globalConfig.apiRoot + 'api/module/check/', // 模块标识符校验接口
         loadApi = globalConfig.apiRoot + 'api/module/load', // 载入模块源文件接口
+        dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 依赖分析接口
         validate = 1, // 是否校验通过
         d_id = $('input[name=id]'),
         d_name = $('input[name=name]'),
@@ -69,6 +70,30 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', '_header'], functio
                         d_code.setValue(json.data.code);
                         d_demo.setValue(json.data.demo);
                         d_author.val(json.data.author);
+                        $('#createTime').html(moment(json.data.createTime).format('YYYY-MM-DD HH:mm:ss'));
+                        $('#lastModify').html(moment(json.data.lastModify).format('YYYY-MM-DD HH:mm:ss'));
+                        var depDom = $('#dependencies');
+                        $.ajax({
+                            url: dependenciesApi + json.data._id,
+                            success: function (data) {
+                                if (0 === data.code) {
+                                    var html = [];
+                                    data.data.exists.forEach(function (v) {
+                                        html.push('<li><a href="/module?mid=' + data.data.map[v].mid + '&pid=' + data.data.map[v].pid + '" title="' + data.data.map[v].name + '">' + v + '</a></li>');
+                                    });
+                                    data.data.lostes.forEach(function (v) {
+                                        html.push('<li class="lost">' + v + '</li>');
+                                    });
+                                    depDom.html(html.length ? html.join('') : '<li>N/A</li>');
+                                }
+                                else {
+                                    depDom.html('<li>N/A</li>');
+                                }
+                            },
+                            error: function (data) {
+                                depDom.html('<li>N/A</li>');
+                            }
+                        });
                     }
                     if (!d_path.parent().find('.btn-load-module').length) {
                         d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');

@@ -138,6 +138,10 @@ a:hover { color: #24B73D; }
 
 #module-container #main-container .module-operate { margin: 36px 0; }
 
+#module-container #main-container .module-dependencies ul li { list-style: none; display: inline-block; padding: 4px 8px; margin: 4px 6px; border: 1px solid #24B73D; }
+
+#module-container #main-container .module-dependencies ul li.lost { border-color: #ff0000; }
+
 #module-container #module-list { margin-left: 12px; }
 
 #module-container #module-list li { list-style: none; line-height: 24px; }
@@ -157,13 +161,17 @@ a:hover { color: #24B73D; }
 
 #moduleadd-container .item label { width: 100px; display: inline-block; text-align: right; }
 
-#moduleadd-container .item input[type=text] { width: 70%; padding-left: 4px; height: 24px; line-height: 24px; min-width: 100px; border: 1px solid #ddd; }
+#moduleadd-container .item input[type=text], #moduleadd-container .item textarea[name=code], #moduleadd-container .item textarea[name=demo], #moduleadd-container .item ul { width: 70%; padding-left: 4px; height: 24px; line-height: 24px; min-width: 100px; border: 1px solid #ddd; }
 
-#moduleadd-container .item input[type=text].error { border: solid 1px #ff0000; }
+#moduleadd-container .item input[type=text].error, #moduleadd-container .item textarea[name=code].error, #moduleadd-container .item textarea[name=demo].error, #moduleadd-container .item ul.error { border: solid 1px #ff0000; }
 
-#moduleadd-container .item textarea[name=code], #moduleadd-container .item textarea[name=demo] { width: 70%; padding-left: 4px; min-width: 200px; height: 30%; min-height: 200px; border: 1px solid #ddd; }
+#moduleadd-container .item textarea[name=code], #moduleadd-container .item textarea[name=demo] { min-width: 200px; height: 30%; min-height: 200px; }
 
-#moduleadd-container .item textarea[name=code].error, #moduleadd-container .item textarea[name=demo].error { border: solid 1px #ff0000; }
+#moduleadd-container .item ul { display: inline-block; border: none; }
+
+#moduleadd-container .item ul li { list-style: none; display: inline-block; margin: 0 4px; padding: 2px 6px; border: 1px solid #ddd; }
+
+#moduleadd-container .item ul li.lost { border-color: #ff0000; }
 
 #moduleadd-container .item #code, #moduleadd-container .item #demo { display: inline-block; width: 71%; height: 500px; border: 1px solid rgba(221, 221, 221, 0.2); }
 

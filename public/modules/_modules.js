@@ -10,8 +10,10 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         moduleApi = globalConfig.apiRoot+'api/module/view/',
         moduleEditUrl = globalConfig.root+'module/edit?pid=' + pid + '&mid=',
         moduleCompressApi = globalConfig.apiRoot+'api/compress',
+        dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 获取模块依赖接口
         retryTimes = 10,
-        moduleName = '';
+        moduleName = '',
+        demoCode = '';
 
     $.ajax({
         url: listApi + pid,
@@ -26,9 +28,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     if (!mid) {
                         loadModule(mid = json.data[0]._id);
                     }
-                    else{
-                        activeLink();
-                    }
+                    activeLink();
                 }
                 else {
                     main.html('<div class="empty">当前项目没有任何模块</div>');
@@ -60,7 +60,9 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
             main.find('.tab > li').removeClass('active').eq(index).addClass('active');
             syncHeight();
         }
-
+        if(1 === index && demoCode && main.find('.content > div').eq(index).html() === ""){
+            main.find('.content > div').eq(index).html(demoCode);
+        }
         if (2 === index && mid) {
             location.href = moduleEditUrl + mid;
         }
@@ -117,8 +119,30 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                         moment: moment
                     }));
                     moduleName = json.data.id;
-                    activeLink();
+                    demoCode = json.data.demo;
                     syncHeight();
+                    var depListDom = $('.module-dependencies > ul');
+                    $.ajax({
+                        url: dependenciesApi+json.data._id,
+                        success: function (data) {
+                            if (0 === data.code) {
+                                var html = [];
+                                data.data.exists.forEach(function (v) {
+                                    html.push('<li><a href="/module?mid=' + data.data.map[v].mid + '&pid=' + data.data.map[v].pid + '" title="' + data.data.map[v].name + '">' + v + '</a></li>');
+                                });
+                                data.data.lostes.forEach(function (v) {
+                                    html.push('<li class="lost">' + v + '</li>');
+                                });
+                                depListDom.html(html.length ? html.join('') : '<li>N/A</li>');
+                            }
+                            else {
+                                depListDom.html('<li>N/A</li>');
+                            }
+                        },
+                        error: function (data) {
+                            depListDom.html('<li>N/A</li>');
+                        }
+                    });
                 }
                 else {
                     main.html('<div class="empty">拉取模块数据失败.</div>');
