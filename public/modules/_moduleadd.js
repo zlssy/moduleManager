@@ -73,27 +73,19 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                         $('#createTime').html(moment(json.data.createTime).format('YYYY-MM-DD HH:mm:ss'));
                         $('#lastModify').html(moment(json.data.lastModify).format('YYYY-MM-DD HH:mm:ss'));
                         var depDom = $('#dependencies');
-                        $.ajax({
-                            url: dependenciesApi + json.data._id,
-                            success: function (data) {
-                                if (0 === data.code) {
-                                    var html = [];
-                                    data.data.exists.forEach(function (v) {
-                                        html.push('<li><a href="/module?mid=' + data.data.map[v].mid + '&pid=' + data.data.map[v].pid + '" title="' + data.data.map[v].name + '">' + v + '</a></li>');
-                                    });
-                                    data.data.lostes.forEach(function (v) {
-                                        html.push('<li class="lost">' + v + '</li>');
-                                    });
-                                    depDom.html(html.length ? html.join('') : '<li>N/A</li>');
-                                }
-                                else {
-                                    depDom.html('<li>N/A</li>');
-                                }
-                            },
-                            error: function (data) {
-                                depDom.html('<li>N/A</li>');
-                            }
-                        });
+                        var html = [];
+                        if(json.data.deps && json.data.deps.exists.length || json.data.deps.lostes.length) {
+                            json.data.deps.exists.forEach(function (v) {
+                                html.push('<li><a href="/module?mid=' + json.data.deps.map[v].mid + '&pid=' + json.data.deps.map[v].pid + '" title="' + json.data.deps.map[v].name + '">' + v + '</a></li>');
+                            });
+                            json.data.deps.lostes.forEach(function (v) {
+                                html.push('<li class="lost">' + v + '</li>');
+                            });
+                            depDom.html(html.length ? html.join('') : '<li>N/A</li>');
+                        }
+                        else{
+                            depDom.html('<li>N/A</li>');
+                        }
                     }
                     if (!d_path.parent().find('.btn-load-module').length) {
                         d_path.parent().append('<button class="btn-load-module face">载入此模块</button>');

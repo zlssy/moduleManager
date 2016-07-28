@@ -34,8 +34,42 @@
             <button class="btn face compress">压缩</button>
         </div>
         <div class="module-dependencies">
-            <h3>模块依赖：</h3>
-            <ul></ul>
+            <h3>依赖的模块：</h3>
+            <ul>
+                <%%
+                    var item, map;
+                    if(module.deps && (module.deps.exists.length || module.deps.lostes.length)){
+                        map = module.deps.map;
+                        for(var i=0,l=module.deps.exists.length;i<l;i++){
+                            item = module.deps.exists[i];
+                %>
+                <li><a href="/module?mid=<%%=map[item].mid%>&pid=<%%=map[item].pid%>" title="<%%=map[item].name%>"><%%= item %></a></li>
+                <%%
+                        }
+                        for(var i=0,l=module.deps.lostes.length;i<l;i++){
+                            item = module.deps.lostes[i];
+                %>
+                <li class="lost"><%%= item %></li>
+                <%% } %>
+                <%% }else{ %>
+                <li>N/A</li>
+                <%% } %>
+            </ul>
+            <br />
+            <h3>被以下模块依赖：</h3>
+            <ul>
+                <%%
+                    var data, item;
+                    data = module.uses ||[];
+                    if(data.length){
+                    for(var i=0,l=data.length;i<l;i++){
+                        item = data[i];
+                %>
+                <li><a href="/module?mid=<%%=item._id%>&pid=<%%=item.pid%>"><%%=item.id%></a></li>
+                <%%}}else{%>
+                <li>N/A</li>
+                <%%}%>
+            </ul>
         </div>
         <pre><code><%%= htmlEncode(module.code).trim() %></code></pre>
     </div>

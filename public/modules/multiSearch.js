@@ -6,7 +6,6 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
         key: 'data-key', // 要替换的连接的关键字
         levelKey: 'data-key', // level3的分层关键字
         path: '/', // 搜索根路径
-        useDefault: false, // 是否启用范围搜索的默认值
         activeClass: 'active' // 激活元素的样式
     };
 
@@ -19,17 +18,16 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             level3Map: {},
             level3Name: {}
         };
-        this.defaultValue = [1, 999];
         this.resetCondition = this.options.resetCondition || function (conds) {
                 var l3 = decodeURIComponent(conds.level3);
 
-                if (l3 && l3.indexOf('rs') > -1) {
-                    var key = '';
+                if (l3 && l3.indexOf('rs')>-1) {
+                    var key='';
                     l3 = l3.replace(/(rs[^a-z-]+)/, function (v) {
                         key = v;
                         return ''
                     });
-                    l3 += key;
+                    l3+=key;
                 }
                 conds.level3 = l3;
             };
@@ -49,7 +47,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
         analysis: function () {
             var url = location.pathname;
             var params = url.replace(new RegExp(this.options.path), '');
-            var conditions = params.replace(/^\/|\/$/g, '').split('/'), self = this;
+            var conditions = params.replace(/^\/|\/$/g, '').split('/');
 
             switch (conditions.length) {
                 case 1:
@@ -66,24 +64,6 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     break;
             }
             this.resetCondition && this.resetCondition(this.conditions);
-            this.options.useDefault && this.conditions.level3 && (this.conditions.level3 = this.conditions.level3.replace(/([a-z]+)([\\d-]+)/g, function (v, v1, v2) {
-                if (v1 && v2) {
-                    if ('-' === v2[0] || '-' === v2[v2.length - 1]) {
-                        var defined = $('[' + self.options.levelKey + '="' + v1 + '"]').data('default');
-                        var dv = $.extend(self.defaultValue, defined ? defined.split(/,|-/) : []);
-                        if ('-' === v2[0]) {
-                            v2 = dv[0] + v2;
-                        }
-                        else {
-                            v2 += dv[1];
-                        }
-                    }
-                    return v1 + v2;
-                }
-                else {
-                    return v;
-                }
-            }));
         },
         setDefault: function () {
             var container, self = this;
@@ -139,10 +119,10 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
 
 
             var level3 = $('.level3');
-            level3.length && level3.each(function (i, v) {
+            level3.length && level3.each(function (i,v) {
                 container = $(v);
                 var key = container.attr(self.options.levelKey).trim(),
-                    value = getLevel3ValueByKey.apply(self, [key]), activeItem, defaultValue;
+                    value = getLevel3ValueByKey.apply(self, [key]), activeItem;
 
                 container.find('.active').removeClass(self.options.activeClass);
                 if (value) {
@@ -154,8 +134,8 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     activeItem = container.find('[' + self.options.key + '=""]');
                 }
                 activeItem.addClass(self.options.activeClass);
-                self.conditions.level3Name[key] = activeItem.html() || (self.conditions.level3Map[key] + container.find('.unit').html());
-                if (value && value.indexOf('-') > -1) {
+                self.conditions.level3Name[key] = activeItem.html() || (self.conditions.level3Map[key]+container.find('.unit').html());
+                if(value && value.indexOf('-')>-1){
                     var vs = value.split('-');
                     var vd = container.find('input');
                     vd.eq(0) && vd.eq(0).val(vs[0] || '');
@@ -206,7 +186,6 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
             return this.options.path;
         },
         setUrl: function (url) {
-            url += '/';
             return url + this.searchStr + (this.hashStr ? '#' + this.hashStr : '');
         },
         getCondition: function () {
@@ -233,7 +212,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     // 要移除level2
                     link = url;
                     if (cond.level3) {
-                        link = url + '/' + cond.level3;
+                        link = '/' + cond.level3;
                     }
                     // 记录关键字与移除关键字的连接
                     keys.push({
@@ -285,10 +264,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
                     v1 = vd.eq(0).val(),
                     v2 = vd.eq(1).val();
                 if (key && v1 > -1 && v2 > -1) {
-                    var defaultValue = $el.parents('.level3').data('default');
-                    var dv = $.extend(self.defaultValue, defaultValue ? defaultValue.split(/,|-/) : []);
-
-                    self.updateLevel3(self.conditions, key, (v1 || dv[0]) + '-' + (v2 || dv[1]));
+                    self.updateLevel3(self.conditions, key, v1 + '-' + v2);
                     location.href = self.getCurrentConditionUrl();
                 }
             });
@@ -300,7 +276,7 @@ define('multiSearch', ['jquery', 'util'], function ($, util) {
     }
 
     function isLevel3(str) {
-        if (includeNumber(str)) {
+        if(includeNumber(str)){
             return true;
         }
         return /rs[^a-z-]+/.test(str);

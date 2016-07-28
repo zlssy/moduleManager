@@ -10,7 +10,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         moduleApi = globalConfig.apiRoot+'api/module/view/',
         moduleEditUrl = globalConfig.root+'module/edit?pid=' + pid + '&mid=',
         moduleCompressApi = globalConfig.apiRoot+'api/compress',
-        dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 获取模块依赖接口
+        // dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 获取模块依赖接口
         retryTimes = 10,
         moduleName = '',
         demoCode = '';
@@ -121,28 +121,28 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     moduleName = json.data.id;
                     demoCode = json.data.demo;
                     syncHeight();
-                    var depListDom = $('.module-dependencies > ul');
-                    $.ajax({
-                        url: dependenciesApi+json.data._id,
-                        success: function (data) {
-                            if (0 === data.code) {
-                                var html = [];
-                                data.data.exists.forEach(function (v) {
-                                    html.push('<li><a href="/module?mid=' + data.data.map[v].mid + '&pid=' + data.data.map[v].pid + '" title="' + data.data.map[v].name + '">' + v + '</a></li>');
-                                });
-                                data.data.lostes.forEach(function (v) {
-                                    html.push('<li class="lost">' + v + '</li>');
-                                });
-                                depListDom.html(html.length ? html.join('') : '<li>N/A</li>');
-                            }
-                            else {
-                                depListDom.html('<li>N/A</li>');
-                            }
-                        },
-                        error: function (data) {
-                            depListDom.html('<li>N/A</li>');
-                        }
-                    });
+                    // var depListDom = $('.module-dependencies > ul');
+                    // $.ajax({
+                    //     url: dependenciesApi+json.data._id,
+                    //     success: function (data) {
+                    //         if (0 === data.code) {
+                    //             var html = [];
+                    //             data.data.exists.forEach(function (v) {
+                    //                 html.push('<li><a href="/module?mid=' + data.data.map[v].mid + '&pid=' + data.data.map[v].pid + '" title="' + data.data.map[v].name + '">' + v + '</a></li>');
+                    //             });
+                    //             data.data.lostes.forEach(function (v) {
+                    //                 html.push('<li class="lost">' + v + '</li>');
+                    //             });
+                    //             depListDom.html(html.length ? html.join('') : '<li>N/A</li>');
+                    //         }
+                    //         else {
+                    //             depListDom.html('<li>N/A</li>');
+                    //         }
+                    //     },
+                    //     error: function (data) {
+                    //         depListDom.html('<li>N/A</li>');
+                    //     }
+                    // });
                 }
                 else {
                     main.html('<div class="empty">拉取模块数据失败.</div>');

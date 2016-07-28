@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var util = require('../util/common');
+var lodash = require('lodash');
 var log4js = require('log4js');
 var log = log4js.getLogger('api');
 var mongoose = require('mongoose');
@@ -208,82 +209,155 @@ router.post('/module/save', function (req, res, next) {
         code = body.code,
         demo = body.demo,
         lastModify = body.lastModify,
-        m;
+        m,
+        deps={},
+        uses = [];
 
-    if (_id) {
-        // update
-        Module.update({_id: _id}, {
-            name: name,
-            author: author,
-            code: code,
-            demo: demo,
-            lastModify: Date.now()
-        }, function (err) {
-            if (err) {
-                log.log('ERROR',err);
-                return res.json({
-                    code: 10,
-                    msg: err.message
+    deps.exists = [];
+    deps.lostes = [];
+    deps.map = {};
+
+    var getDependenciesPromise = new Promise(function (resolve, reject) {
+        // 依赖分析
+        var myDeps = code.match(moduleDependenciesReg);
+        if (myDeps) {
+            myDepsList = (myDeps[1] && myDeps[1].split(',') || []).map(function (v) {
+                return v.replace(/\s*'|\s*"/g, '');
+            });
+            if (myDepsList.length) {
+                directive = '|'+myDepsList.join('|')+'|';
+                getDependencies(myDepsList, deps, function (ret, data) {
+                    if(ret) {
+                        resolve(deps);
+                    }
+                    else{
+                        reject(data.message);
+                    }
                 });
             }
+            else {
+                directive = "";
+                resolve(deps);
+            }
+        }
+        else{
+            directive = "";
+            resolve(deps)
+        }
+    });
 
-            // 写文件
-            util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
-                if (-1 === result) {
-                    return res.json({
-                        code: 12,
-                        msg: 'async file error.'
-                    });
+    getDependenciesPromise.then(function (value) {
+        return new Promise(function (resolve, reject) {
+            Module.find({
+                $or:[{'deps.exists': id},{'deps.lostes':id}]
+            }, function (err, data) {
+                if(err){
+                    return reject(err.message);
                 }
-                else if (1 === result) {
-                    return res.json({
-                        code: 0,
-                        msg: 'success'
+                if(data && data.length){
+                    data.forEach(function (v) {
+                        uses.push({
+                            _id: v._id,
+                            pid: v.pid,
+                            id: v.id,
+                            name: v.name
+                        });
                     });
+                    resolve(uses);
+                }
+                else{
+                    resolve(uses);
                 }
             });
         });
-    }
-    else {
-        // add
-        m = new Module({
-            id: id,
-            pid: pid,
-            name: name,
-            path: path,
-            author: author,
-            code: code,
-            demo: demo,
-            lastModify: lastModify
+    }).then(save).catch(function (value) {
+        log.log('ERROR',value);
+        res.json({
+            code: 103,
+            msg: value
         });
+    });
 
-        m.save(function (err, data) {
-            if (err) {
-                log.log('ERROR',err);
-                return res.json({
-                    code: 1,
-                    msg: err.message
+    function save(useMyList) {
+        if (_id) {
+            // update
+            Module.update({_id: _id}, {
+                name: name,
+                author: author,
+                code: code,
+                demo: demo,
+                deps: deps,
+                uses: useMyList,
+                lastModify: Date.now()
+            }, function (err) {
+                if (err) {
+                    log.log('ERROR',err);
+                    return res.json({
+                        code: 10,
+                        msg: err.message
+                    });
+                }
+
+                // 写文件
+                util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
+                    if (-1 === result) {
+                        return res.json({
+                            code: 12,
+                            msg: 'async file error.'
+                        });
+                    }
+                    else if (1 === result) {
+                        return res.json({
+                            code: 0,
+                            msg: 'success'
+                        });
+                    }
                 });
-            }
-            // 写文件
-            util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
-                if (-1 === result) {
-                    // 回滚
-                    Module.findOneAndRemove({_id: data._id}, function () {
-                    });
-                    return res.json({
-                        code: 2,
-                        msg: '保存模块出错.'
-                    });
-                }
-                else if (1 === result) {
-                    return res.json({
-                        code: 0,
-                        msg: 'success'
-                    });
-                }
             });
-        });
+        }
+        else {
+            // add
+            m = new Module({
+                id: id,
+                pid: pid,
+                name: name,
+                path: path,
+                author: author,
+                code: code,
+                demo: demo,
+                deps: deps,
+                uses: useMyList,
+                lastModify: lastModify
+            });
+            m.save(function (err, data) {
+                if (err) {
+                    log.log('ERROR',err);
+                    return res.json({
+                        code: 1,
+                        msg: err.message
+                    });
+                }
+                // 写文件
+                util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
+                    if (-1 === result) {
+                        // 回滚
+                        Module.findOneAndRemove({_id: data._id}, function () {
+                        });
+                        return res.json({
+                            code: 2,
+                            msg: '保存模块出错.'
+                        });
+                    }
+                    else if (1 === result) {
+                        return res.json({
+                            code: 0,
+                            msg: 'success'
+                        });
+                    }
+                });
+            });
+        }
+
     }
 });
 
@@ -496,10 +570,12 @@ function getDependencies(depList, deps, cb) {
                 });
                 depList.length && (deps.lostes = deps.lostes.concat(depList));
                 curModuleDeps = util.uniq(curModuleDeps);
+                // !deps.directive && (deps.directive = lodash.clone(deps, true));
                 getDependencies(curModuleDeps, deps, cb);
             }
-            else{
+            else {
                 deps.lostes = deps.lostes.concat(depList);
+                // !deps.directive && (deps.directive = lodash.clone(deps, true));
                 getDependencies([], deps, cb);
             }
         });
