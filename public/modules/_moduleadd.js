@@ -74,7 +74,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                         $('#lastModify').html(moment(json.data.lastModify).format('YYYY-MM-DD HH:mm:ss'));
                         var depDom = $('#dependencies');
                         var html = [];
-                        if(json.data.deps && json.data.deps.exists.length || json.data.deps.lostes.length) {
+                        if(json.data.deps && (json.data.deps.exists && json.data.deps.exists.length || json.data.deps.lostes.length)) {
                             json.data.deps.exists.forEach(function (v) {
                                 html.push('<li><a href="/module?mid=' + json.data.deps.map[v].mid + '&pid=' + json.data.deps.map[v].pid + '" title="' + json.data.deps.map[v].name + '">' + v + '</a></li>');
                             });
