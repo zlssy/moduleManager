@@ -2,6 +2,9 @@ var fs = require('fs');
 var path = require('path');
 var uglify = require('uglify-js');
 var babel = require('babel-core');
+var log = require('log4js');
+var logger = log.getLogger('app');
+var config = require('../config.json');
 
 /**
  * 遍历目录，并判定制定文件是否存在 只读一层目录
@@ -14,7 +17,7 @@ function fileInFolder(filename, folder, cb) {
     if (filename && folder) {
         fs.readdir(folder, function (err, files) {
             if (err) {
-                console.log(err);
+                logger.log('ERROR',err);
                 return cb(-1);
             }
             else {
@@ -45,7 +48,7 @@ exports.saveFile = function (filename, data, cb) {
     if(filename && data){
         fs.writeFile(path.resolve(filename), data, {encoding: 'utf-8'}, function (err) {
             if(err){
-                console.log(err);
+                logger.log('ERROR',err);
                 cb(-1);
             }
             else {
@@ -64,6 +67,7 @@ exports.readFile = function (filename, cb) {
     if(filename){
         fs.stat(filename, function (err, data) {
             if(err){
+                logger.log('ERROR', err);
                 return cb(false, err);
             }
             fs.readFile(filename,{encoding: 'utf-8'}, function (fe, d) {
@@ -103,6 +107,7 @@ exports.compress = function (inFiles, outFile, cb) {
             originalCode = babel.transform(originalCode, {
                 presets: ['es2015']
             }).code;
+            !config.babel.useStrict && (originalCode = originalCode.replace(/(['|"]*)(use strict)\1;?/, ''));
             ast = uglify.parse(originalCode);
             ast.figure_out_scope();
             ast.compute_char_frequency();
