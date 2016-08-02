@@ -5,5 +5,8 @@
     "db": "legos",
     "user": "xhjLegos",
     "pwd": "Xhjlegos123"
+  },
+  "babel":{
+    "useStrict":false
   }
 }
