@@ -286,6 +286,7 @@ router.post('/module/save', function (req, res, next) {
                 code: code,
                 demo: demo,
                 deps: deps,
+                path: path,
                 uses: useMyList,
                 lastModify: Date.now()
             }, function (err) {
