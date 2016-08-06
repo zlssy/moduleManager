@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var util = require('../util/common');
-var lodash = require('lodash');
 var log4js = require('log4js');
 var log = log4js.getLogger('api');
 var mongoose = require('mongoose');
