@@ -113,6 +113,9 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
             url: moduleApi + mid,
             success: function (json) {
                 if (0 === json.code) {
+                    if(json.data.code && json.data.code.length > 50000){
+                        json.data.code = json.data.code.substr(0, 50000);
+                    }
                     main.html(util.formatJson(containerTpl, {
                         module: json.data,
                         htmlEncode: util.htmlEncode,
