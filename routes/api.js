@@ -6,8 +6,8 @@ var log = log4js.getLogger('api');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var modelSchema = require('../models/model');
-var config  = require('../config.json').mongodb;
-var connStr = 'mongodb://'+config.server+':'+config.port+'/'+config.db;
+var config = require('../config.json').mongodb;
+var connStr = 'mongodb://' + config.server + ':' + config.port + '/' + config.db;
 var connOpt = {};
 config.user && (connOpt.user = config.user);
 config.pwd && (connOpt.pass = config.pwd);
@@ -25,12 +25,12 @@ var moduleDependenciesReg = /define\s*\([^\[]*(?:\[([^\]]+)])?\s*(?:,\s*)/m;
  */
 router.get('/project/list', function (req, res, next) {
     Project.find({}, function (err, data) {
-        if(err){
-            log.log('ERROR',err);
+        if (err) {
+            log.log('ERROR', err);
             return res.json({
                 code: 1,
                 msg: 'server error.'
-            });            
+            });
         }
         res.json({
             code: 0,
@@ -44,15 +44,15 @@ router.get('/project/list', function (req, res, next) {
  */
 router.get('/project/view/:pid', function (req, res, next) {
     var pid = req.params['pid'];
-    if(!pid){
+    if (!pid) {
         return res.json({
             code: 1,
             msg: 'lost the required parameter project id.'
         });
     }
     Project.findById(pid, function (err, data) {
-        if(err){
-            log.log('ERROR',err);
+        if (err) {
+            log.log('ERROR', err);
             return res.json({
                 code: 2,
                 msg: err.message
@@ -73,14 +73,14 @@ router.post('/project/add', function (req, res, next) {
     var projectName = body.projectName || '';
     var userGroup = body.userGroup || '';
 
-    if(projectName) {
+    if (projectName) {
         var p = new Project({
             name: projectName,
             userGroup: userGroup.split(',')
         });
         p.save(function (err) {
             if (err) {
-                log.log('ERROR',err);
+                log.log('ERROR', err);
                 return res.json({
                     code: 1,
                     msg: JSON.stringify(err)
@@ -92,7 +92,7 @@ router.post('/project/add', function (req, res, next) {
             });
         });
     }
-    else{
+    else {
         res.json({
             code: 2,
             msg: 'lost required parameter projectName.'
@@ -105,21 +105,21 @@ router.post('/project/add', function (req, res, next) {
  */
 router.get('/module/list/:pid', function (req, res, next) {
     var pid = req.params['pid'];
-    if(!pid){
+    if (!pid) {
         return res.json({
             code: 1,
             msg: 'lost the required parameter project id.'
         });
     }
-    Module.find({pid: pid},{_id:1, id: 1, name: 1, pid:1}, function (err, data) {
-        if(err){
-            log.log('ERROR',err);
+    Module.find({pid: pid}, {_id: 1, id: 1, name: 1, pid: 1}, function (err, data) {
+        if (err) {
+            log.log('ERROR', err);
             return res.json({
                 code: 2,
                 msg: 'server error.'
             });
         }
-        res.json({            
+        res.json({
             code: 0,
             data: data
         });
@@ -132,10 +132,10 @@ router.get('/module/list/:pid', function (req, res, next) {
 router.get('/module/view/:mid', function (req, res, next) {
     var mid = req.params['mid'];
 
-    if(mid){
+    if (mid) {
         Module.findById(mid, function (err, data) {
-            if(err){
-                log.log('ERROR',err);
+            if (err) {
+                log.log('ERROR', err);
                 return res.json({
                     code: 2,
                     msg: err.message
@@ -147,7 +147,7 @@ router.get('/module/view/:mid', function (req, res, next) {
             });
         });
     }
-    else{
+    else {
         return res.json({
             code: 1,
             msg: 'lost the required parameter mid.'
@@ -162,30 +162,30 @@ router.get('/module/check/:id', function (req, res, next) {
     var id = req.params['id'];
 
     checkModuleId(id, function (result) {
-        if(-2 === result){
+        if (-2 === result) {
             return res.json({
                 code: -2,
                 msg: 'mongo error.'
             });
-        }else if(-1 === result){
+        } else if (-1 === result) {
             return res.json({
                 code: -1,
                 msg: 'file system error.'
             });
         }
-        else if(0 === result){
+        else if (0 === result) {
             return res.json({
                 code: 0,
                 msg: 'not file and not record.'
             });
         }
-        else if(1 === result){
+        else if (1 === result) {
             return res.json({
                 code: 1,
                 msg: 'file exist.'
             });
         }
-        else if(2 === result){
+        else if (2 === result) {
             return res.json({
                 code: 2,
                 msg: 'module exist.'
@@ -209,7 +209,7 @@ router.post('/module/save', function (req, res, next) {
         demo = body.demo,
         lastModify = body.lastModify,
         m,
-        deps={},
+        deps = {},
         uses = [];
 
     deps.exists = [];
@@ -224,12 +224,12 @@ router.post('/module/save', function (req, res, next) {
                 return v.replace(/\s*'|\s*"/g, '');
             });
             if (myDepsList.length) {
-                directive = '|'+myDepsList.join('|')+'|';
+                directive = '|' + myDepsList.join('|') + '|';
                 getDependencies(myDepsList, deps, function (ret, data) {
-                    if(ret) {
+                    if (ret) {
                         resolve(deps);
                     }
-                    else{
+                    else {
                         reject(data.message);
                     }
                 });
@@ -239,7 +239,7 @@ router.post('/module/save', function (req, res, next) {
                 resolve(deps);
             }
         }
-        else{
+        else {
             directive = "";
             resolve(deps)
         }
@@ -248,12 +248,12 @@ router.post('/module/save', function (req, res, next) {
     getDependenciesPromise.then(function (value) {
         return new Promise(function (resolve, reject) {
             Module.find({
-                $or:[{'deps.exists': id},{'deps.lostes':id}]
+                $or: [{'deps.exists': id}, {'deps.lostes': id}]
             }, function (err, data) {
-                if(err){
+                if (err) {
                     return reject(err.message);
                 }
-                if(data && data.length){
+                if (data && data.length) {
                     data.forEach(function (v) {
                         uses.push({
                             _id: v._id,
@@ -264,13 +264,13 @@ router.post('/module/save', function (req, res, next) {
                     });
                     resolve(uses);
                 }
-                else{
+                else {
                     resolve(uses);
                 }
             });
         });
     }).then(save).catch(function (value) {
-        log.log('ERROR',value);
+        log.log('ERROR', value);
         res.json({
             code: 103,
             msg: value
@@ -291,7 +291,7 @@ router.post('/module/save', function (req, res, next) {
                 lastModify: Date.now()
             }, function (err) {
                 if (err) {
-                    log.log('ERROR',err);
+                    log.log('ERROR', err);
                     return res.json({
                         code: 10,
                         msg: err.message
@@ -331,7 +331,7 @@ router.post('/module/save', function (req, res, next) {
             });
             m.save(function (err, data) {
                 if (err) {
-                    log.log('ERROR',err);
+                    log.log('ERROR', err);
                     return res.json({
                         code: 1,
                         msg: err.message
@@ -366,13 +366,13 @@ router.post('/module/save', function (req, res, next) {
  */
 router.post('/module/load', function (req, res, next) {
     var filename = req.body.filename;
-    util.readFile(moduleFolder+'/'+filename+'.js', function (result, data) {
-        if(result) {
+    util.readFile(moduleFolder + '/' + filename + '.js', function (result, data) {
+        if (result) {
             return res.json({
                 code: 0,
                 data: data
             });
-        }else{
+        } else {
             return res.json({
                 code: 1,
                 msg: data.message
@@ -389,29 +389,29 @@ router.post('/compress', function (req, res, next) {
     var modules = req.body.modules.split(',');
     var combName = req.body.combName || '';
     var ms = [];
-    if(modules.length) {
+    if (modules.length) {
         modules.forEach(function (item) {
             if (item && '' != (item = item.trim())) {
-                ms.push(moduleFolder+'/'+item+'.js');
+                ms.push(moduleFolder + '/' + item + '.js');
             }
         });
-        if(ms.length === 1) combName = ms[0].replace(moduleFolder, distFolder);
+        if (ms.length === 1) combName = ms[0].replace(moduleFolder, distFolder);
 
         util.compress(ms, combName, function (result) {
-            if(-1 === result){
+            if (-1 === result) {
                 log.log('INFO', 'compress module failure when save the file.');
                 return res.json({
                     code: 3,
                     msg: 'save file failure.'
                 });
             }
-            else if( 1 === result){
+            else if (1 === result) {
                 return res.json({
                     code: 0,
                     msg: 'success'
                 });
             }
-            else{
+            else {
                 return res.json({
                     code: 10,
                     msg: 'server error.'
@@ -419,7 +419,7 @@ router.post('/compress', function (req, res, next) {
             }
         });
     }
-    else{
+    else {
         return res.json({
             code: 2,
             msg: 'lost required parameter modules.'
@@ -432,20 +432,27 @@ router.post('/compress', function (req, res, next) {
  */
 router.post('/search', function (req, res, next) {
     var key = req.body.keys;
-    if(key){
-        Module.find({name: new RegExp('.*?'+key+'.*?')}, function (err, data) {
-            if(err){
-                log.log('ERROR',err);
+    if (key) {
+        var re = new RegExp('.*?' + key + '.*?');
+        Module.find({
+                $or: [
+                    {name: re},
+                    {id: key}
+                ]
+            }, function (err, data) {
+                if (err) {
+                    log.log('ERROR', err);
+                    return res.json({
+                        code: 1,
+                        msg: err.message
+                    });
+                }
                 return res.json({
-                    code: 1,
-                    msg: err.message
+                    code: 0,
+                    data: data
                 });
             }
-            return res.json({
-                code: 0,
-                data: data
-            });
-        });
+        );
     }
 });
 
@@ -453,11 +460,11 @@ router.post('/search', function (req, res, next) {
  * 模块依赖分析
  */
 router.get('/module/dependencies/:mid', function (req, res, next) {
-    var mid = req.params['mid'], deps={};
+    var mid = req.params['mid'], deps = {};
     deps.exists = [];
     deps.lostes = [];
     deps.map = {};
-    if(mid) {
+    if (mid) {
         Module.findById(mid, function (err, data) {
             if (err) {
                 log.log("ERROR", err);
@@ -474,13 +481,13 @@ router.get('/module/dependencies/:mid', function (req, res, next) {
                     });
                     if (myDepsList.length) {
                         getDependencies(myDepsList, deps, function (ret, data) {
-                            if(ret) {
+                            if (ret) {
                                 return res.json({
                                     code: 0,
                                     data: data
                                 });
                             }
-                            else{
+                            else {
                                 return res.json({
                                     code: 3,
                                     msg: data.message
@@ -495,7 +502,7 @@ router.get('/module/dependencies/:mid', function (req, res, next) {
                         });
                     }
                 }
-                else{
+                else {
                     return res.json({
                         code: 0,
                         data: deps
@@ -521,7 +528,7 @@ function checkModuleId(id, cb) {
     // 查库
     Module.find({id: id}, function (err, data) {
         if (err) {
-            log.log('ERROR',err);
+            log.log('ERROR', err);
             return cb(-2); // 出错
         }
         if (data.length) {
