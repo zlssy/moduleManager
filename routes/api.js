@@ -552,7 +552,7 @@ function getDependencies(depList, deps, cb) {
         return !(deps.exists.indexOf(dep) > -1 || deps.lostes.indexOf(dep) > -1);
     });
     if (depList.length) {
-        Module.find({id: new RegExp(depList.join('|'))}, function (err, data) {
+        Module.find({id: {$in:depList}}, function (err, data) {
             if (err) {
                 log.log('ERROR', err);
                 return cb(false, err);
