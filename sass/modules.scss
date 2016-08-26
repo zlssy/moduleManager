@@ -234,3 +234,12 @@ $asideWidth: 200;
     color: $lightGreen;
   }
  }
+.module-tags{
+
+  li{
+    display: inline-block;
+    margin: 2px 6px;
+    border: solid 1px $greenColor;
+    padding: 4px 8px;
+  }
+}

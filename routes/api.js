@@ -207,6 +207,7 @@ router.post('/module/save', function (req, res, next) {
         author = body.author,
         code = body.code,
         demo = body.demo,
+        tags = body.tags ? body.tags.split(/,|，/) : [],
         lastModify = body.lastModify,
         m,
         deps = {},
@@ -288,6 +289,7 @@ router.post('/module/save', function (req, res, next) {
                 deps: deps,
                 path: path,
                 uses: useMyList,
+                tags: tags,
                 lastModify: Date.now()
             }, function (err) {
                 if (err) {
@@ -327,6 +329,7 @@ router.post('/module/save', function (req, res, next) {
                 demo: demo,
                 deps: deps,
                 uses: useMyList,
+                tags: tags,
                 lastModify: lastModify
             });
             m.save(function (err, data) {
@@ -437,7 +440,8 @@ router.post('/search', function (req, res, next) {
         Module.find({
                 $or: [
                     {name: re},
-                    {id: key}
+                    {id: key},
+                    {tags: {$in: [key]}}
                 ]
             }, function (err, data) {
                 if (err) {
@@ -552,7 +556,7 @@ function getDependencies(depList, deps, cb) {
         return !(deps.exists.indexOf(dep) > -1 || deps.lostes.indexOf(dep) > -1);
     });
     if (depList.length) {
-        Module.find({id: {$in:depList}}, function (err, data) {
+        Module.find({id: {$in: depList}}, function (err, data) {
             if (err) {
                 log.log('ERROR', err);
                 return cb(false, err);

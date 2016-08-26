@@ -17,6 +17,19 @@
     %>
     <li>
         <h3 class="title"><a href="/module?pid=<%%=item.pid%>&mid=<%%=item._id%>"><%%= item.name %></a></h3>
+        <%%
+            if(item.tags && item.tags.length){
+        %>
+        <ul class="module-tags">
+        <%%
+                for(var j=0,jl=item.tags.length;j<jl;j++){
+        %>
+        <li><%%=item.tags[j]%></li>
+        <%%
+            }
+        %>
+            </ul>
+        <%%}%>
         <div class="search-desc"><%%=tool.clear(item.demo)%></div>
         <div class="search-expando">展开</div>
     </li>

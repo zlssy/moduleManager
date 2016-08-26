@@ -16,6 +16,7 @@ var moduleSchema = new Schema({
     demo: String,
     deps: Schema.Types.Mixed,
     uses: [Schema.Types.Mixed],
+    tags: [String],
     modified: {type: Boolean, default: false},
     createTime: {type: Date, default: Date.now},
     lastModify: {type:Date}

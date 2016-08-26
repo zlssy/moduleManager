@@ -11,7 +11,8 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
         d_id = $('input[name=id]'),
         d_name = $('input[name=name]'),
         d_path = $('input[name=path]'),
-        d_author = $('input[name=author]');
+        d_author = $('input[name=author]'),
+        d_tags = $('input[name=tags]');
 
     var d_code = ace.edit('code'),
         d_demo = ace.edit('demo');
@@ -70,6 +71,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                         d_code.setValue(json.data.code);
                         d_demo.setValue(json.data.demo);
                         d_author.val(json.data.author);
+                        d_tags.val(json.data.tags ? json.data.tags.join(',') : '');
                         $('#createTime').html(moment(json.data.createTime).format('YYYY-MM-DD HH:mm:ss'));
                         $('#lastModify').html(moment(json.data.lastModify).format('YYYY-MM-DD HH:mm:ss'));
                         var depDom = $('#dependencies');
@@ -163,6 +165,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                 _author = d_author.val(),
                 _code = d_code.getValue(),
                 _demo = d_demo.getValue(),
+                _tags = d_tags.val(),
                 _createTime = Date.now(),
                 _lastModify = Date.now();
 
@@ -175,6 +178,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                 author: _author,
                 code: _code,
                 demo: _demo,
+                tags: _tags,
                 lastModify: _lastModify
             };
 

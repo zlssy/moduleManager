@@ -29,7 +29,20 @@
     <div>
         <h1 class="center"><%%= module.name %></h1>
         <small class="date"><%%= module.author %> create @ <%%= moment(module.createTime).format('YYYY-MM-DD HH:mm:ss') %>. last modify @ <%%= moment(module.lastModify).format('YYYY-MM-DD HH:mm:ss')%></small>
-        <div>URL：<%%= module.path %></div>
+        <div class="normalHeight"><b>URL：</b><%%= module.path %></div>
+        <div class="normalHeight"><b>编译文件URL：</b><%%= module.path.replace('/modules/', '/dist/') %></div>
+        <%% if(module.tags && module.tags.length){%>
+        <h3>标签：</h3>
+        <ul class="module-tags">
+            <%%
+                for(var i=0;i<module.tags.length;i++){
+            %>
+            <li><%%=module.tags[i]%></li>
+            <%%
+                }
+            %>
+        </ul>
+        <%%}%>
         <div class="module-operate">
             <button class="btn face compress">发布</button>
         </div>
