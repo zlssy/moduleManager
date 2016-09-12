@@ -130,3 +130,20 @@ exports.uniq = function (arr) {
     });
     return ret;
 };
+
+/**
+ * 文件拷贝
+ * @param source 资源
+ * @param target 目的
+ * @param cb
+ */
+exports.copy = function (source, target, cb) {
+    exports.readFile(source, function (ret, data) {
+        if(ret){
+            exports.saveFile(target, data, cb);
+        }
+        else{
+            cb(false, data);
+        }
+    });
+};

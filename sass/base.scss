@@ -86,6 +86,20 @@ button{
     }
   }
 
+  &.copy{
+    background: $buttonCopy;
+    &:hover{
+      background: rgba($buttonCopy, .8);
+    }
+  }
+
+  &.sync{
+    background: $buttonSync;
+    &:hover{
+      background: rgba($buttonSync, .8);
+    }
+  }
+
   &:hover{
     background: $buttonHover;
   }

@@ -27,6 +27,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.locals.env = require('./config.json').env;
+
 app.use('/users', users);
 app.use('/api', api);
 app.use('/', routes);

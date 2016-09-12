@@ -5,15 +5,18 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         containerTpl = $('#containerTpl').html(),
         ul = $('#module-list'),
         main = $('#main-container'),
-        listApi = globalConfig.apiRoot+'api/module/list/',
-        viewProjectApi = globalConfig.apiRoot+'api/project/view/',
-        moduleApi = globalConfig.apiRoot+'api/module/view/',
-        moduleEditUrl = globalConfig.root+'module/edit?pid=' + pid + '&mid=',
-        moduleCompressApi = globalConfig.apiRoot+'api/compress',
-        // dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 获取模块依赖接口
+        listApi = globalConfig.apiRoot + 'api/module/list/',
+        viewProjectApi = globalConfig.apiRoot + 'api/project/view/',
+        moduleApi = globalConfig.apiRoot + 'api/module/view/',
+        moduleEditUrl = globalConfig.root + 'module/edit?pid=' + pid + '&mid=',
+        moduleCompressApi = globalConfig.apiRoot + 'api/compress',
+        moduleCopyApi = globalConfig.apiRoot + 'api/copy',
+        moduleSyncApi = globalConfig.apiRoot + 'api/sync',
+    // dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 获取模块依赖接口
         retryTimes = 10,
         moduleName = '',
-        demoCode = '';
+        demoCode = '',
+        compressLock = false;
 
     $.ajax({
         url: listApi + pid,
@@ -55,7 +58,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         var $el = $(this);
         var index = main.find('.tab > li').index($el);
 
-        if(1 === index && demoCode && main.find('.content > div').eq(index).html() === ""){
+        if (1 === index && demoCode && main.find('.content > div').eq(index).html() === "") {
             main.find('.content > div').eq(index).html(demoCode);
         }
         if (2 === index && mid) {
@@ -68,35 +71,67 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         }
     });
     main.on('click', '.module-operate > button', function (e) {
-        var $el = $(this);
+        var $el = $(this),
+            cls = $el.attr('class');
 
-        if($el.hasClass('compress')){
-            $.ajax({
-                url: moduleCompressApi,
-                method: 'post',
-                data: {modules: moduleName},
-                success: function (json) {
-                    if(0 === json.code){
-                        dialog({
-                            title: '温馨提示',
-                            content: '压缩完成！'
-                        }).show();
+        if ($el.hasClass('compress')) {
+            if (!compressLock) {
+                compressLock = !compressLock;
+                $.ajax({
+                    url: moduleCompressApi,
+                    method: 'post',
+                    data: {modules: moduleName},
+                    success: function (json) {
+                        compressLock = false;
+                        if (0 === json.code) {
+                            dialog({
+                                title: '温馨提示',
+                                content: '发布完成！'
+                            }).show();
+                        }
+                        else {
+                            info('发布失败!');
+                        }
+                    },
+                    error: function (json) {
+                        compressLock = false;
+                        info(json.msg);
                     }
-                    else{
-                        info('压缩失败!');
+                });
+            }
+        }
+        else if($el.hasClass('copy')){
+            if(!compressLock){
+                compressLock = !compressLock;
+                $.ajax({
+                    url: moduleCopyApi,
+                    method: 'post',
+                    data:{module:moduleName},
+                    success: function (json) {
+                        compressLock = false;
+                        if(0 === json.code){
+                            dialog({
+                                title: '温馨提示',
+                                content: '直接发布完成！'
+                            }).show();
+                        }
+                        else{
+                            info('直接发布失败！');
+                        }
+                    },
+                    error: function (json) {
+                        compressLock = false;
+                        info(json.msg);
                     }
-                },
-                error: function (json) {
-                    info(json.msg);
-                }
-            });
+                });
+            }
         }
     });
 
     $.ajax({
-        url:viewProjectApi+pid,
+        url: viewProjectApi + pid,
         success: function (json) {
-            if(0 === json.code){
+            if (0 === json.code) {
                 $('#myProjectName').html(json.data.name);
             }
             else {
@@ -113,7 +148,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
             url: moduleApi + mid,
             success: function (json) {
                 if (0 === json.code) {
-                    if(json.data.code && json.data.code.length > 50000){
+                    if (json.data.code && json.data.code.length > 50000) {
                         json.data.code = json.data.code.substr(0, 50000);
                     }
                     main.html(util.formatJson(containerTpl, {
@@ -124,28 +159,6 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     moduleName = json.data.id;
                     demoCode = json.data.demo;
                     syncHeight();
-                    // var depListDom = $('.module-dependencies > ul');
-                    // $.ajax({
-                    //     url: dependenciesApi+json.data._id,
-                    //     success: function (data) {
-                    //         if (0 === data.code) {
-                    //             var html = [];
-                    //             data.data.exists.forEach(function (v) {
-                    //                 html.push('<li><a href="/module?mid=' + data.data.map[v].mid + '&pid=' + data.data.map[v].pid + '" title="' + data.data.map[v].name + '">' + v + '</a></li>');
-                    //             });
-                    //             data.data.lostes.forEach(function (v) {
-                    //                 html.push('<li class="lost">' + v + '</li>');
-                    //             });
-                    //             depListDom.html(html.length ? html.join('') : '<li>N/A</li>');
-                    //         }
-                    //         else {
-                    //             depListDom.html('<li>N/A</li>');
-                    //         }
-                    //     },
-                    //     error: function (data) {
-                    //         depListDom.html('<li>N/A</li>');
-                    //     }
-                    // });
                 }
                 else {
                     main.html('<div class="empty">拉取模块数据失败.</div>');
@@ -166,7 +179,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
             d.close();
         }, t);
     }
-    
+
     function syncHeight() {
         ul.attr('style', null);
         main.attr('style', null);
@@ -183,7 +196,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         /**
          * 设置默认选中项
          */
-        if(links.length) {
+        if (links.length) {
             links.each(function (i, v) {
                 var $el = $(v),
                     href = $el.attr('href');
@@ -193,7 +206,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                 }
             });
         }
-        else if(retryTimes > 0) {
+        else if (retryTimes > 0) {
             retryTimes--;
             setTimeout(activeLink, 10);
         }

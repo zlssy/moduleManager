@@ -15,7 +15,8 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
         d_tags = $('input[name=tags]');
 
     var d_code = ace.edit('code'),
-        d_demo = ace.edit('demo');
+        d_demo = ace.edit('demo'),
+        saveLock = false;
 
     d_code.setTheme("ace/theme/monokai");
     d_code.getSession().setMode("ace/mode/javascript");
@@ -204,22 +205,27 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
             }
 
             function send() {
-                $.ajax({
-                    url: saveApi,
-                    method: 'post',
-                    data: data,
-                    success: function (json) {
-                        if (0 === json.code) {
-                            location.href = '/module?pid=' + pid + (mid ? '&mid=' + mid : '');
+                if(!saveLock) {
+                    saveLock = !saveLock;
+                    $.ajax({
+                        url: saveApi,
+                        method: 'post',
+                        data: data,
+                        success: function (json) {
+                            saveLock = false;
+                            if (0 === json.code) {
+                                location.href = '/module?pid=' + pid + (mid ? '&mid=' + mid : '');
+                            }
+                            else {
+                                info('保存失败。');
+                            }
+                        },
+                        error: function (json) {
+                            saveLock = false;
+                            info(json.msg);
                         }
-                        else {
-                            info('保存失败。');
-                        }
-                    },
-                    error: function (json) {
-                        info(json.msg);
-                    }
-                });
+                    });
+                }
             }
         }
         else {

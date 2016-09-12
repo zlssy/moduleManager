@@ -29,6 +29,14 @@ button.face { background: #24B73D; }
 
 button.face:hover { background: rgba(36, 183, 61, 0.8); }
 
+button.copy { background: #ff9138; }
+
+button.copy:hover { background: rgba(255, 145, 56, 0.8); }
+
+button.sync { background: #439cff; }
+
+button.sync:hover { background: rgba(67, 156, 255, 0.8); }
+
 button:hover { background: rgba(0, 0, 0, 0.1); }
 
 a { text-decoration: none; color: #000; }

@@ -1,4 +1,4 @@
-define(['jquery'], function($) {
+define('util', function () {
     var _formatJson_cache = {};
 
     /**
@@ -9,7 +9,7 @@ define(['jquery'], function($) {
      */
     function object2param(o, transVal) {
         var r = [],
-            transVal = transVal || function(v) {
+            transVal = transVal || function (v) {
                     return encodeURIComponent(v);
                 };
         for (var k in o) {
@@ -78,6 +78,18 @@ define(['jquery'], function($) {
     }
 
     /**
+     * 模板解析，解析{}包裹的数据
+     * @param tpl 模板
+     * @param data  数据
+     * @returns {XML|string|void}
+     */
+    function format(tpl, data) {
+        return tpl.replace(/{([^\}]+)}/g, function (v, v1) {
+            return data[v1] ? data[v1] : v;
+        });
+    }
+
+    /**
      * [loadJsonp 加载jsonp数据]
      * @param  {[type]} url [url地址]
      * @param  {[type]} opt [配置参数]
@@ -117,24 +129,25 @@ define(['jquery'], function($) {
         }
         var el = document.createElement("script");
         el.charset = option.charset || "utf-8";
-        el.onload = el.onreadystatechange = function() {
+        el.onload = el.onreadystatechange = function () {
             if (/loaded|complete/i.test(this.readyState) || navigator.userAgent.toLowerCase().indexOf("msie") == -1) {
                 option.onLoad && option.onLoad();
                 clear();
             }
         };
-        el.onerror = function() {
+        el.onerror = function () {
             option.onError && option.onError();
             clear();
         };
         el.src = url;
         document.getElementsByTagName('head')[0].appendChild(el);
         if (typeof option.onTimeout == "function") {
-            timer = setTimeout(function() {
+            timer = setTimeout(function () {
                 option.onTimeout();
             }, option.timeout);
-        };
-        var clear = function() {
+        }
+        ;
+        var clear = function () {
             if (!el) {
                 return;
             }
@@ -150,7 +163,7 @@ define(['jquery'], function($) {
      * @param {[type]} val [description]
      */
     function setHash(val) {
-        setTimeout(function() {
+        setTimeout(function () {
             location.hash = val;
         }, 0);
     }
@@ -209,12 +222,16 @@ define(['jquery'], function($) {
      */
     function decodeUrl(url) {
         url = decodeURIComponent(url);
-        var urlObj = this.parseUrl(url),
+        var urlObj = parseUrl(url),
             decodedParam = [];
-        $.each(urlObj.params, function(key, value) {
-            value = decodeURIComponent(value);
-            decodedParam.push(key + "=" + value);
-        });
+
+        if (urlObj && urlObj.params) {
+            var value;
+            for (var key in urlObj.params) {
+                value = decodeURIComponent(urlObj.params[key]);
+                decodedParam.push(key + "=" + value);
+            }
+        }
         var urlPrefix = url.split("?")[0];
         return urlPrefix + "?" + decodedParam.join("&");
     }
@@ -233,7 +250,7 @@ define(['jquery'], function($) {
             host: a.hostname,
             port: a.port,
             query: a.search,
-            params: (function() {
+            params: (function () {
                 var ret = {},
                     seg = a.search.replace(/^\?/, '').split('&'),
                     len = seg.length,
@@ -299,7 +316,7 @@ define(['jquery'], function($) {
     function once(fn) {
         var run = false;
         return function () {
-            !run && (run = !run, fn.call(arguments[0] || null, Array.prototype.slice.call(arguments, 1)));
+            !run && (run = !run, fn.apply(arguments[0] || null, Array.prototype.slice.call(arguments, 1)));
         }
     }
 
@@ -327,7 +344,9 @@ define(['jquery'], function($) {
      * @param value
      */
     function htmlEncode(value) {
-        return $('<div/>').text(value).html();
+        var d = document.createElement('div');
+        d.innerText = value;
+        return d.innerHTML;
     }
 
     /**
@@ -335,7 +354,138 @@ define(['jquery'], function($) {
      * @param value
      */
     function htmlDecode(value) {
-        return $('<div/>').html(value).text();
+        var d = document.createElement('div');
+        d.innerHTML = value;
+        return d.innerText;
+    }
+
+    function is(type, target) {
+        return Object.prototype.toString.call(target) === '[object ' + type + ']';
+    }
+
+    function deepClone(source, target) {
+        if (target) {
+            for (var k in target) {
+                if (target.hasOwnProperty(k)) {
+                    var v = target[k];
+                    if (is('Object', v)) {
+                        source[k] = {};
+                        deepClone(source[k], v);
+                    }
+                    else if (is('Array', v)) {
+                        source[k] = [];
+                        for (var i = 0, l = v.length; i < l; i++) {
+                            source[k][i] = v[i];
+                            deepClone(source[k][i], v[i]);
+                        }
+                    }
+                    else {
+                        source[k] = target[k];
+                    }
+                }
+            }
+        }
+        return source;
+    }
+
+    function EventBase() {
+        this._events = {}
+    }
+
+    EventBase.prototype = {
+        on: function (name, fn) {
+            var evt = this._events[name] || (this._events[name] = []);
+            typeof fn === 'function' && evt.push(fn);
+            return this;
+        },
+        trigger: function (name) {
+            var evt = this._events[name];
+            if (evt && evt.length) {
+                for (var i = 0; i < evt.length; i++) {
+                    evt[i].apply(this, Array.prototype.slice.call(arguments, 1));
+                }
+            }
+            return this;
+        },
+        off: function (name, fn) {
+            if (name) {
+                var evt = this._events[name];
+                if (fn) {
+                    for (var i = 0; i < evt.length; i++) {
+                        if (fn === evt[i]) {
+                            evt.splice(i--, 1);
+                        }
+                    }
+                }
+                else {
+                    this._events[name] = [];
+                }
+            }
+            else {
+                this._events = {};
+            }
+            return this;
+        }
+    };
+
+    function TouchListen(opt) {
+        this.agile = opt && opt.agile || 50; // 灵敏度， 单位毫秒
+        this._events = {};
+    }
+
+    TouchListen.prototype = {
+        init: function () {
+            document.addEventListener('touchstart', (e)=> {
+                this.startPoint = e.targetTouches[0];
+                this.time = e.timeStamp;
+            });
+            document.addEventListener('touchmove', (e)=> {
+                var t = e.timeStamp, endPoint;
+                if (t - this.time > this.agile) {
+                    this.time = t;
+                    endPoint = e.targetTouches[0];
+                    if(endPoint.screenX - this.startPoint.screenX > 0){
+                        this.trigger('swipeRight', e);
+                    }
+                    if(endPoint.screenX - this.startPoint.screenX < 0){
+                        this.trigger('swipeLeft', e);
+                    }
+                    if(endPoint.screenY - this.startPoint.screenY > 0){
+                        this.trigger('swipeDown', e);
+                    }
+                    if(endPoint.screenY - this.startPoint.screenY < 0){
+                        this.trigger('swipeUp', e);
+                    }
+                }
+            });
+        }
+    };
+
+    deepClone(TouchListen.prototype, EventBase.prototype);
+
+    /**
+     * 清除空格
+     * @param str
+     */
+    function trim(str) {
+        return str ? str.replace(/^\s*|\s*$/g, '') : str;
+    }
+
+    /**
+     * 清除左侧空格
+     * @param str
+     */
+    function ltrim(str) {
+        return str ? str.replace(/^\s*/g, '') : str;
+    }
+
+    /**
+     * 清除右侧空格
+     * @param str
+     * @returns {XML|string|void}
+     */
+    function rtrim(str) {
+        return str ? str.replace(/\s*$/g, '') : str;
     }
 
     return {
@@ -356,6 +506,7 @@ define(['jquery'], function($) {
             replaceParam: replaceParam
         },
         formatJson: formatJson,
+        format: format,
         loadJsonp: loadJsonp,
         date: {
             isDate: isDate,
@@ -364,6 +515,13 @@ define(['jquery'], function($) {
         htmlEncode: htmlEncode,
         htmlDecode: htmlDecode,
         once: once,
+        is:is,
+        deepClone: deepClone,
+        EventBase: EventBase,
+        TouchListen: TouchListen,
+        trim: trim,
+        ltrim: ltrim,
+        rtrim: rtrim,
         log: log
     };
 });
