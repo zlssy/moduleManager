@@ -45,8 +45,8 @@
         <%%}%>
         <div class="module-operate">
             <%if("dev" == env){%><button class="btn face sync">同步至测试服务器</button><%}%>
-            <button class="btn face compress">发布</button>
-            <button class="btn face copy">直接发布(Copy)</button>
+            <%if("test" == env){%><button class="btn face compress">发布</button><%}%>
+            <%if('test' == env){%><button class="btn face copy">直接发布(Copy)</button><%}%>
         </div>
         <div class="module-dependencies">
             <h3>依赖的模块：</h3>

@@ -3,14 +3,15 @@ var router = express.Router();
 var util = require('../util/common');
 var log4js = require('log4js');
 var log = log4js.getLogger('api');
+var request = require('request');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var modelSchema = require('../models/model');
-var config = require('../config.json').mongodb;
-var connStr = 'mongodb://' + config.server + ':' + config.port + '/' + config.db;
+var config = require('../config.json');
+var connStr = 'mongodb://' + config.mongodb.server + ':' + config.mongodb.port + '/' + config.mongodb.db;
 var connOpt = {};
-config.user && (connOpt.user = config.user);
-config.pwd && (connOpt.pass = config.pwd);
+config.mongodb.user && (connOpt.user = config.mongodb.user);
+config.mongodb.pwd && (connOpt.pass = config.mongodb.pwd);
 var db = mongoose.createConnection(connStr, connOpt);
 var moduleFolder = './public/modules';
 var distFolder = './public/dist';
@@ -298,9 +299,48 @@ router.post('/copy', function (req, res, next) {
 });
 
 /**
- * 远程同步, 同步服务
+ * 数据同步
  */
 router.post('/sync', function (req, res, next) {
+    var id = req.body.id;
+    if (id) {
+        var opt = {
+            url: config.syncRemoteApi,
+            method: 'post',
+            form: req.body
+        };
+        request(opt, function (err, response, body) {
+            if (err) {
+                return res.json({
+                    code: 1,
+                    msg: err.message
+                });
+            }
+            else {
+                try {
+                    var data = JSON.parse(body);
+                    return res.json(data);
+                }catch(e){
+                    res.json({
+                        code: 2,
+                        data: body
+                    });
+                }
+            }
+        });
+    }
+    else {
+        res.json({
+            code: 1,
+            msg: 'lost required parameter id.'
+        });
+    }
+});
+
+/**
+ * 远程同步, 同步服务
+ */
+router.post('/remotesync', function (req, res, next) {
     var id = req.body.id;
     if (id) {
         new Promise(function (resolve, reject) {
@@ -312,13 +352,13 @@ router.post('/sync', function (req, res, next) {
                     resolve(data);
                 }
             });
-        }).then(function (md) {
-            if (md && md.id) {
-                req.body._id = md._id;
+        }).then(function (md) {            
+            if (md && md[0] && md[0].id) {
+                req.body._id = md[0]._id;
             }
             else {
                 delete req.body._id;
-            }
+            }            
             module_save(req, res, next);
         }).catch(function (err) {
             return res.json({

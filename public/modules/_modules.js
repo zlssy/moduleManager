@@ -12,10 +12,10 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         moduleCompressApi = globalConfig.apiRoot + 'api/compress',
         moduleCopyApi = globalConfig.apiRoot + 'api/copy',
         moduleSyncApi = globalConfig.apiRoot + 'api/sync',
-    // dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 获取模块依赖接口
         retryTimes = 10,
         moduleName = '',
         demoCode = '',
+        moduleData = null,
         compressLock = false;
 
     $.ajax({
@@ -100,22 +100,22 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                 });
             }
         }
-        else if($el.hasClass('copy')){
-            if(!compressLock){
+        else if ($el.hasClass('copy')) {
+            if (!compressLock) {
                 compressLock = !compressLock;
                 $.ajax({
                     url: moduleCopyApi,
                     method: 'post',
-                    data:{module:moduleName},
+                    data: {module: moduleName},
                     success: function (json) {
                         compressLock = false;
-                        if(0 === json.code){
+                        if (0 === json.code) {
                             dialog({
                                 title: '温馨提示',
                                 content: '直接发布完成！'
                             }).show();
                         }
-                        else{
+                        else {
                             info('直接发布失败！');
                         }
                     },
@@ -125,6 +125,27 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     }
                 });
             }
+        }
+        else if ($el.hasClass('sync')) {
+            $.ajax({
+                url: moduleSyncApi,
+                method: 'post',
+                data: moduleData,
+                success: function (json) {
+                    if (0 === json.code) {
+                        dialog({
+                            title: '温馨提示',
+                            content: '同步完成！'
+                        }).show();
+                    }
+                    else {
+                        info('同步失败!');
+                    }
+                },
+                error: function (json) {
+                    info(json.msg);
+                }
+            })
         }
     });
 
@@ -156,6 +177,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                         htmlEncode: util.htmlEncode,
                         moment: moment
                     }));
+                    moduleData = json.data;
                     moduleName = json.data.id;
                     demoCode = json.data.demo;
                     syncHeight();
