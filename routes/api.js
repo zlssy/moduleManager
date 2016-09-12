@@ -309,24 +309,41 @@ router.post('/sync', function (req, res, next) {
             method: 'post',
             form: req.body
         };
-        request(opt, function (err, response, body) {
-            if (err) {
-                return res.json({
-                    code: 1,
-                    msg: err.message
-                });
-            }
-            else {
-                try {
-                    var data = JSON.parse(body);
-                    return res.json(data);
-                }catch(e){
-                    res.json({
-                        code: 2,
-                        data: body
+        new Promise(function (resolve, reject) {
+            Project.find({_id: req.body.pid}, function (err, data) {
+                if (err) {
+                    reject(err.message);
+                }
+                else {
+                    resolve(data[0].name);
+                }
+            });
+        }).then(function (projectName) {
+            req.body.projectName = projectName;
+            request(opt, function (err, response, body) {
+                if (err) {
+                    return res.json({
+                        code: 1,
+                        msg: err.message
                     });
                 }
-            }
+                else {
+                    try {
+                        var data = JSON.parse(body);
+                        return res.json(data);
+                    } catch (e) {
+                        res.json({
+                            code: 2,
+                            data: body
+                        });
+                    }
+                }
+            });
+        }).catch(function (err) {
+            return res.json({
+                code: 101,
+                msg: err
+            });
         });
     }
     else {
@@ -341,9 +358,9 @@ router.post('/sync', function (req, res, next) {
  * 远程同步, 同步服务
  */
 router.post('/remotesync', function (req, res, next) {
-    var id = req.body.id;
-    if (id) {
-        new Promise(function (resolve, reject) {
+    var id = req.body.id, pid = req.body.pid, pjname = req.body.projectName;
+    if (id && pid) {
+        var getModule = new Promise(function (resolve, reject) {
             Module.find({id: id}, {id: 1}, function (err, data) {
                 if (err) {
                     reject(err.message);
@@ -352,14 +369,57 @@ router.post('/remotesync', function (req, res, next) {
                     resolve(data);
                 }
             });
-        }).then(function (md) {            
-            if (md && md[0] && md[0].id) {
-                req.body._id = md[0]._id;
+        });
+        var getProject = new Promise(function (resolve, reject) {
+            Project.find({name: pjname}, function (err, data) {
+                if (err) {
+                    reject(err.message);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        });
+
+        Promise.all([getModule, getProject]).then(function (result) {
+            if (result && result.length === 2) {
+                var md = result[0], pd = result[1];
+
+                if (md && md[0] && md[0].id) {
+                    req.body._id = md[0]._id;
+                }
+                else {
+                    delete req.body._id;
+                }
+
+                if (pd && pd[0]) {
+                    req.body.pid = pd[0]._id;
+                    module_save(req, res, next);
+                }
+                else {
+                    new Project({
+                        name: pjname,
+                        userGroup: 'all'
+                    }).save(function (err, data) {
+                        if (err) {
+                            return res.json({
+                                code: 16,
+                                msg: err.message
+                            });
+                        }
+                        else {
+                            req.body.pid = data._id;
+                            module_save(req, res, next);
+                        }
+                    });
+                }
             }
             else {
-                delete req.body._id;
-            }            
-            module_save(req, res, next);
+                return res.json({
+                    code: 15,
+                    msg: 'get result failure.'
+                });
+            }
         }).catch(function (err) {
             return res.json({
                 code: 101,
@@ -370,7 +430,7 @@ router.post('/remotesync', function (req, res, next) {
     else {
         res.json({
             code: 1,
-            msg: 'lost required parameter id.'
+            msg: 'lost required parameter id and pid.'
         });
     }
 });
