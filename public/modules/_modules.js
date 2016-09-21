@@ -169,15 +169,16 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
             url: moduleApi + mid,
             success: function (json) {
                 if (0 === json.code) {
-                    if (json.data.code && json.data.code.length > 50000) {
-                        json.data.code = json.data.code.substr(0, 50000);
+                    moduleData = json.data;
+                    var renderData = util.deepClone({}, moduleData);
+                    if (renderData.code && renderData.code.length > 50000) {
+                        renderData.code = renderData.code.substr(0, 50000);
                     }
                     main.html(util.formatJson(containerTpl, {
-                        module: json.data,
+                        module: renderData,
                         htmlEncode: util.htmlEncode,
                         moment: moment
                     }));
-                    moduleData = json.data;
                     moduleName = json.data.id;
                     demoCode = json.data.demo;
                     syncHeight();

@@ -7,6 +7,9 @@
     <script>
         require.config({
             baseUrl: '/modules',
+            urlArgs: function () {
+                return '?t='+Math.ceil(Date.now()/86400000);
+            },
             paths: {
                 jquery: '/lib/jquery.min',
                 underscore: '/lib/underscore.min'
