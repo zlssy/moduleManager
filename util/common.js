@@ -7,7 +7,7 @@ var logger = log.getLogger('app');
 var config = require('../config.json');
 
 /**
- * 遍历目录，并判定制定文件是否存在 只读一层目录
+ * 遍历目录，并判定指定文件是否存在 只读一层目录
  * @param filename  要查找的文件
  * @param folder  要遍历的目录
  * @param cb  处理函数 -1 出错， 1: 找到, 0: 没找到
@@ -17,7 +17,7 @@ function fileInFolder(filename, folder, cb) {
     if (filename && folder) {
         fs.readdir(folder, function (err, files) {
             if (err) {
-                logger.log('ERROR',err);
+                logger.log('ERROR', err);
                 return cb(-1);
             }
             else {
@@ -28,7 +28,7 @@ function fileInFolder(filename, folder, cb) {
                         return cb(1);
                     }
                 });
-                if(!exist) {
+                if (!exist) {
                     cb(0);
                 }
             }
@@ -45,10 +45,10 @@ exports.fileInFolder = fileInFolder;
  * @param cb
  */
 exports.saveFile = function (filename, data, cb) {
-    if(filename && data){
+    if (filename && data) {
         fs.writeFile(path.resolve(filename), data, {encoding: 'utf-8'}, function (err) {
-            if(err){
-                logger.log('ERROR',err);
+            if (err) {
+                logger.log('ERROR', err);
                 cb(-1);
             }
             else {
@@ -64,14 +64,14 @@ exports.saveFile = function (filename, data, cb) {
  * @param cb
  */
 exports.readFile = function (filename, cb) {
-    if(filename){
+    if (filename) {
         fs.stat(filename, function (err, data) {
-            if(err){
+            if (err) {
                 logger.log('ERROR', err);
                 return cb(false, err);
             }
-            fs.readFile(filename,{encoding: 'utf-8'}, function (fe, d) {
-                if(fe){
+            fs.readFile(filename, {encoding: 'utf-8'}, function (fe, d) {
+                if (fe) {
                     return cb(false, err);
                 }
                 cb(true, d);
@@ -88,8 +88,14 @@ exports.getLocalTime = function (time) {
     return time - (new Date().getTimezoneOffset()) * 60000;
 };
 
+/**
+ * 文件压缩
+ * @param inFiles {Array} 输入文件列表
+ * @param outFile {String} 输出文件名
+ * @param cb {Function} 回调函数
+ */
 exports.compress = function (inFiles, outFile, cb) {
-    var files = Array.isArray(inFiles) ? inFiles : [inFiles], originalCode, distCode='', ast, m;
+    var files = Array.isArray(inFiles) ? inFiles : [inFiles], originalCode, distCode = '', ast, m;
     var compresser = uglify.Compressor({
         sequences: true
     });
@@ -117,12 +123,17 @@ exports.compress = function (inFiles, outFile, cb) {
         }
         exports.saveFile(outFile, distCode, cb);
     }
-    catch (e){
+    catch (e) {
         console.log(e);
         cb(10, e);
     }
 };
 
+/**
+ * 列表去重
+ * @param arr {Array} 要去重的数组
+ * @returns {Array} 去重完成的数组
+ */
 exports.uniq = function (arr) {
     var ret = [];
     arr.forEach(function (v) {
@@ -139,11 +150,32 @@ exports.uniq = function (arr) {
  */
 exports.copy = function (source, target, cb) {
     exports.readFile(source, function (ret, data) {
-        if(ret){
+        if (ret) {
             exports.saveFile(target, data, cb);
         }
-        else{
+        else {
             cb(false, data);
         }
     });
+};
+
+/**
+ * 获取文件组中文件的信息
+ * @param fs 文件列表（带完整路径）
+ * @param cb 回调函数
+ */
+exports.getFileInfo = function (files, cb) {
+    var fileArr = Array.isArray(files) ? files : [files], info = {};
+    var fileLen = fileArr.length, count = 0;
+    fileArr && fileArr.length && fileArr.forEach(function (v) {
+        fs.stat(path.resolve(v), function (err, data) {
+            var fileInfo;
+            fileInfo = err ? {} : data;
+            info[v] = fileInfo;
+            count++;
+            if (count === fileLen) {
+                cb(info);
+            }
+        });
+    })
 };

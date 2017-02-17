@@ -435,27 +435,26 @@ define('util', function () {
 
     TouchListen.prototype = {
         init: function () {
-            var self = this;
-            document.addEventListener('touchstart', function(e) {
-                self.startPoint = e.targetTouches[0];
-                self.time = e.timeStamp;
+            document.addEventListener('touchstart', (e)=> {
+                this.startPoint = e.targetTouches[0];
+                this.time = e.timeStamp;
             });
-            document.addEventListener('touchmove', function(e) {
+            document.addEventListener('touchmove', (e)=> {
                 var t = e.timeStamp, endPoint;
-                if (t - self.time > self.agile) {
-                    self.time = t;
+                if (t - this.time > this.agile) {
+                    this.time = t;
                     endPoint = e.targetTouches[0];
-                    if(endPoint.screenX - self.startPoint.screenX > 0){
-                        self.trigger('swipeRight', e);
+                    if(endPoint.screenX - this.startPoint.screenX > 0){
+                        this.trigger('swipeRight', e);
                     }
-                    if(endPoint.screenX - self.startPoint.screenX < 0){
-                        self.trigger('swipeLeft', e);
+                    if(endPoint.screenX - this.startPoint.screenX < 0){
+                        this.trigger('swipeLeft', e);
                     }
-                    if(endPoint.screenY - self.startPoint.screenY > 0){
-                        self.trigger('swipeDown', e);
+                    if(endPoint.screenY - this.startPoint.screenY > 0){
+                        this.trigger('swipeDown', e);
                     }
-                    if(endPoint.screenY - self.startPoint.screenY < 0){
-                        self.trigger('swipeUp', e);
+                    if(endPoint.screenY - this.startPoint.screenY < 0){
+                        this.trigger('swipeUp', e);
                     }
                 }
             });

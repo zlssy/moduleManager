@@ -16,7 +16,7 @@
     for(var i=0, l=list.length;i<l;i++){
         item = list[i];
 %>
-    <li><a href="/module?pid=<%%=pid%>&mid=<%%=item._id%>"><%%= item.name %></a></li>
+    <li data-module="<%%=item.id%>"><a href="/module?pid=<%%=pid%>&mid=<%%=item._id%>"><%%= item.name %></a></li>
 <%% } %>
 </script>
 <script id="containerTpl" type="text/html">

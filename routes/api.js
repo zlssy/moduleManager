@@ -112,7 +112,7 @@ router.get('/module/list/:pid', function (req, res, next) {
             msg: 'lost the required parameter project id.'
         });
     }
-    Module.find({pid: pid}, {_id: 1, id: 1, name: 1, pid: 1}, function (err, data) {
+    Module.find({pid: pid}, {_id: 1, id: 1, name: 1, pid: 1, lastModify: 1}, function (err, data) {
         if (err) {
             log.log('ERROR', err);
             return res.json({
@@ -463,6 +463,30 @@ router.post('/search', function (req, res, next) {
             }
         );
     }
+    else {
+        next();
+    }
+});
+
+/**
+ * 校验文件状态
+ */
+router.post('/checkfileinfo', function (req, res, next) {
+    var fileArr = req.body.files;
+    if (fileArr) {
+        util.getFileInfo(fileArr.split(',').map(function (m) {
+            return moduleFolder + '/' + m;
+        }), function (data) {
+            res.json({
+                code: 0,
+                msg: '',
+                data: data
+            });
+        });
+    }
+    else {
+        next();
+    }
 });
 
 /**
@@ -690,42 +714,49 @@ function module_save(req, res, next) {
 
     function save(useMyList) {
         if (_id) {
-            // update
-            Module.update({_id: _id}, {
-                name: name,
-                author: author,
-                code: code,
-                demo: demo,
-                deps: deps,
-                path: path,
-                uses: useMyList,
-                tags: tags,
-                lastModify: Date.now()
-            }, function (err) {
-                if (err) {
-                    log.log('ERROR', err);
-                    return res.json({
-                        code: 10,
-                        msg: err.message
-                    });
-                }
+            // util.getFileInfo(moduleFolder + '/' + id + '.js', function (fileInfo) {
+            //     var d;
+            //     for(var k in fileInfo){
+            //         d = fileInfo[k];
+            //     }
+                // update
+                Module.update({_id: _id}, {
+                    name: name,
+                    author: author,
+                    code: code,
+                    demo: demo,
+                    deps: deps,
+                    path: path,
+                    uses: useMyList,
+                    tags: tags,
+                    lastModify: Date.now()//,
+                    // fileLastModify: d.mtime
+                }, function (err) {
+                    if (err) {
+                        log.log('ERROR', err);
+                        return res.json({
+                            code: 10,
+                            msg: err.message
+                        });
+                    }
 
-                // 写文件
-                util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
-                    if (-1 === result) {
-                        return res.json({
-                            code: 12,
-                            msg: 'async file error.'
-                        });
-                    }
-                    else if (1 === result) {
-                        return res.json({
-                            code: 0,
-                            msg: 'success'
-                        });
-                    }
+                    // 写文件
+                    util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
+                        if (-1 === result) {
+                            return res.json({
+                                code: 12,
+                                msg: 'async file error.'
+                            });
+                        }
+                        else if (1 === result) {
+                            return res.json({
+                                code: 0,
+                                msg: 'success'
+                            });
+                        }
+                    });
                 });
-            });
+            // });
         }
         else {
             // add

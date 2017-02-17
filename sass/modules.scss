@@ -130,6 +130,16 @@ $asideWidth: 200;
           color: $lightGreen;
         }
       }
+
+      &.new{
+        &:after{
+          content: ' new';
+          font: italic bold 9px/12px '微软雅黑', '宋体', Arial;
+          position: relative;
+          top: -6px;
+          color: red;
+        }
+      }
     }
   }
 

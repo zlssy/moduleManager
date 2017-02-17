@@ -160,6 +160,8 @@ a:hover { color: #24B73D; }
 
 #module-container #module-list li a.active { color: #24B73D; }
 
+#module-container #module-list li.new:after { content: ' new'; font: italic bold 9px/12px '微软雅黑', '宋体', Arial; position: relative; top: -6px; color: red; }
+
 #module-container:after { content: ' '; clear: both; }
 
 #create { position: absolute; top: 24px; right: 12px; }

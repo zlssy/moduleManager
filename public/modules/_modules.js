@@ -12,12 +12,17 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         moduleCompressApi = globalConfig.apiRoot + 'api/compress',
         moduleCopyApi = globalConfig.apiRoot + 'api/copy',
         moduleSyncApi = globalConfig.apiRoot + 'api/sync',
+        fileCheckApi = globalConfig.apiRoot + 'api/checkfileinfo',
         retryTimes = 10,
         moduleName = '',
         demoCode = '',
         moduleData = null,
+        moduleListData = {},
         compressLock = false;
 
+    /**
+     * 获取模块列表
+     */
     $.ajax({
         url: listApi + pid,
         method: 'get',
@@ -31,6 +36,38 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                     if (!mid) {
                         loadModule(mid = json.data[0]._id);
                     }
+                    /* 文件时间对比 */
+                    var files = json.data.map(function (m) {
+                        moduleListData[m.id + '.js'] = m;
+                        return m.id + '.js';
+                    });
+                    $.ajax({
+                        url: fileCheckApi,
+                        method: 'post',
+                        data: {files: files.join(',')},
+                        success: function (fileJson) {
+                            if (fileJson.code == 0) {
+                                var data = fileJson.data || {}, keys = [], maps = {}, key;
+                                for (var k in data) {
+                                    key = k.substr(k.lastIndexOf('/') + 1);
+                                    keys.push(key);
+                                    maps[key] = data[k];
+                                }
+                                /* 比对模块最后修改时间 */
+                                keys.forEach(function (module) {
+                                    if (maps[module]) {
+                                        if (Math.abs(moment(maps[module].mtime).diff(moment(moduleListData[module].lastModify), 'second')) > 2) {
+                                            ul.find('li[data-module="' + module.substr(0,module.indexOf('.')) + '"]').addClass('new');
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        error: function (fileErrJson) {
+                            console.log('error', fileErrJson);
+                        }
+                    });
+                    /* --end check-- */
                     activeLink();
                 }
                 else {
@@ -46,14 +83,19 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         }
     });
 
+    /**
+     * 如果有携带mid，则获取该模块
+     */
     if (mid) {
         loadModule(mid);
     }
 
+    /**
+     * 注册事件
+     */
     $('#create').on('click', function () {
         location.href = '/module/add?pid=' + pid;
     });
-
     main.on('click', '.tab > li', function () {
         var $el = $(this);
         var index = main.find('.tab > li').index($el);
@@ -149,6 +191,9 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         }
     });
 
+    /**
+     * 读取当前模块名称
+     */
     $.ajax({
         url: viewProjectApi + pid,
         success: function (json) {
@@ -164,6 +209,10 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         }
     });
 
+    /**
+     * 加载模块数据
+     * @param mid 模块ID
+     */
     function loadModule(mid) {
         $.ajax({
             url: moduleApi + mid,
@@ -193,6 +242,11 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         });
     }
 
+    /**
+     * 给出消息提示
+     * @param msg 消息体
+     * @param timer 延时关闭时间
+     */
     function info(msg, timer) {
         var d = dialog({
             content: msg
@@ -203,6 +257,9 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         }, t);
     }
 
+    /**
+     * 同步菜单与模块信息面板的高度
+     */
     function syncHeight() {
         ul.attr('style', null);
         main.attr('style', null);
@@ -214,6 +271,9 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         main.height(h);
     }
 
+    /**
+     * 激活链接
+     */
     function activeLink() {
         var links = ul.find('a[href]');
         /**
