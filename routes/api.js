@@ -441,12 +441,12 @@ router.post('/remotesync', function (req, res, next) {
 router.post('/search', function (req, res, next) {
     var key = req.body.keys;
     if (key) {
-        var re = new RegExp('.*?' + key + '.*?');
+        var re = new RegExp('.*?' + key + '.*?', 'i');
         Module.find({
                 $or: [
                     {name: re},
                     {id: key},
-                    {tags: {$in: [key]}}
+                    {tags: {$in: [re]}}
                 ]
             }, function (err, data) {
                 if (err) {
