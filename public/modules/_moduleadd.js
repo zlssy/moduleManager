@@ -1,4 +1,4 @@
-define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header'], function ($, util, dialog, ace, moment) {
+define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', 'moment', '_header'], function ($, util, dialog, ace, moment) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         projectApi = globalConfig.apiRoot + 'api/project/view/' + pid, // 项目接口
@@ -6,7 +6,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
         saveApi = globalConfig.apiRoot + 'api/module/save', // 模块保存接口
         checkApi = globalConfig.apiRoot + 'api/module/check/', // 模块标识符校验接口
         loadApi = globalConfig.apiRoot + 'api/module/load', // 载入模块源文件接口
-        dependenciesApi = globalConfig.apiRoot+'api/module/dependencies/', // 依赖分析接口
+        dependenciesApi = globalConfig.apiRoot + 'api/module/dependencies/', // 依赖分析接口
         validate = 1, // 是否校验通过
         d_id = $('input[name=id]'),
         d_name = $('input[name=name]'),
@@ -36,7 +36,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                     $('.crumbs > a').eq(1).attr('href', '/module?pid=' + pid).html(json.data.name);
                 }
                 else {
-                    info('项目数据拉去出错.');
+                    info('项目数据拉取出错.');
                 }
             }
             else {
@@ -77,7 +77,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                         $('#lastModify').html(moment(json.data.lastModify).format('YYYY-MM-DD HH:mm:ss'));
                         var depDom = $('#dependencies');
                         var html = [];
-                        if(json.data.deps && (json.data.deps.exists && json.data.deps.exists.length || json.data.deps.lostes.length)) {
+                        if (json.data.deps && (json.data.deps.exists && json.data.deps.exists.length || json.data.deps.lostes.length)) {
                             json.data.deps.exists.forEach(function (v) {
                                 html.push('<li><a href="/module?mid=' + json.data.deps.map[v].mid + '&pid=' + json.data.deps.map[v].pid + '" title="' + json.data.deps.map[v].name + '">' + v + '</a></li>');
                             });
@@ -86,7 +86,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                             });
                             depDom.html(html.length ? html.join('') : '<li>N/A</li>');
                         }
-                        else{
+                        else {
                             depDom.html('<li>N/A</li>');
                         }
                     }
@@ -187,25 +187,41 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace','moment', '_header']
                 data.createTime = _createTime;
             }
 
-            if (2 === validate) {
-                var d = dialog({
-                    title: '提交确认？',
-                    content: '此模块的物理文件已存在，是否要覆盖？',
+            if (/alert/ig.test(_code)) {
+                var cd = dialog({
+                    title: '温馨提示',
+                    content: '您的模块代码中包含了alert代码，是否继续提交？',
                     ok: function () {
-                        send();
-                    },
-                    cancel: function () {
-
+                        submitData();
                     }
                 });
-                d.showModal();
+                cd.showModal();
             }
             else {
-                send();
+                submitData();
+            }
+
+            function submitData() {
+                if (2 === validate) {
+                    var d = dialog({
+                        title: '提交确认？',
+                        content: '此模块的物理文件已存在，是否要覆盖？',
+                        ok: function () {
+                            send();
+                        },
+                        cancel: function () {
+
+                        }
+                    });
+                    d.showModal();
+                }
+                else {
+                    send();
+                }
             }
 
             function send() {
-                if(!saveLock) {
+                if (!saveLock) {
                     saveLock = !saveLock;
                     $.ajax({
                         url: saveApi,

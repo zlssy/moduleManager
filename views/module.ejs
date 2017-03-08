@@ -21,9 +21,10 @@
 </script>
 <script id="containerTpl" type="text/html">
 <ul class="tab">
-    <li class="active">介绍</li>
-    <li>Demo</li>
-    <li>编辑</li>
+    <li id="description" class="active">介绍</li>
+    <li id="demo">Demo</li>
+    <li id="history">历史版本</li>
+    <li id="edit">编辑</li>
 </ul>
 <div class="content">
     <div>
@@ -89,6 +90,7 @@
         <pre><code><%%= htmlEncode(module.code).trim() %></code></pre>
         <br /><br /><br /><br />
     </div>
+    <div style="display: none;"></div>
     <div style="display: none;"></div>
 </div>
 </script>

@@ -18,6 +18,7 @@ var distFolder = './public/dist';
 
 var Project = db.model('projects', modelSchema.projectSchema);
 var Module = db.model('modules', modelSchema.moduleSchema);
+var HistoryModule = db.model('histories', modelSchema.historyModuleSchema);
 
 var moduleDependenciesReg = /define\s*\([^\[]*(?:\[([^\]]+)])?\s*(?:,\s*function|factory)/m;
 
@@ -553,6 +554,44 @@ router.get('/module/dependencies/:mid', function (req, res, next) {
 });
 
 /**
+ * 获取模块历史
+ */
+router.get('/history/:mid', function (req, res, next) {
+    var mid = req.params['mid'];
+    HistoryModule.find({mid: mid}, {code: 0}).sort({createTime: "desc"}).exec(function (err, data) {
+        if (err) {
+            return res.json({
+                code: 1,
+                message: err.message
+            });
+        }
+        res.json({
+            code: 0,
+            data: data
+        });
+    });
+});
+
+router.get('/history/download/:id', function (req, res, next) {
+    var id = req.params["id"];
+    if (id) {
+        HistoryModule.findById({_id: id}, {code: 1}, function (err, data) {
+            if (err) {
+                res.end();
+            }
+            res.set({
+                "Content-Type": "application/octet-stream",
+                "Content-Disposition": "attachment;filename=" + encodeURIComponent(id + ".js")
+            });
+            res.end(Buffer.from(data.code, 'utf-8'));
+        });
+    }
+    else {
+        res.end();
+    }
+});
+
+/**
  * 校验模块标识符是否可用
  * @param id  标识符
  * @param cb  处理函数
@@ -714,49 +753,24 @@ function module_save(req, res, next) {
 
     function save(useMyList) {
         if (_id) {
-            // util.getFileInfo(moduleFolder + '/' + id + '.js', function (fileInfo) {
-            //     var d;
-            //     for(var k in fileInfo){
-            //         d = fileInfo[k];
-            //     }
-                // update
-                Module.update({_id: _id}, {
-                    name: name,
-                    author: author,
-                    code: code,
-                    demo: demo,
-                    deps: deps,
-                    path: path,
-                    uses: useMyList,
-                    tags: tags,
-                    lastModify: Date.now()//,
-                    // fileLastModify: d.mtime
-                }, function (err) {
+            // update
+            pushHistory(function () {
+                Module.findById(_id, function (err, data) {
                     if (err) {
-                        log.log('ERROR', err);
-                        return res.json({
-                            code: 10,
-                            msg: err.message
-                        });
+                        update();
+                        return;
                     }
-
-                    // 写文件
-                    util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
-                        if (-1 === result) {
-                            return res.json({
-                                code: 12,
-                                msg: 'async file error.'
-                            });
-                        }
-                        else if (1 === result) {
-                            return res.json({
-                                code: 0,
-                                msg: 'success'
-                            });
-                        }
+                    var hm = new HistoryModule({
+                        mid: _id,
+                        code: data.code,
+                        moduleDate: data.lastModify
+                    });
+                    hm.save(function (sErr, sData) {
+                        console.log('save history module.');
+                        update();
                     });
                 });
-            // });
+            });
         }
         else {
             // add
@@ -802,6 +816,70 @@ function module_save(req, res, next) {
             });
         }
 
+        // 更新模块数据
+        function update() {
+            Module.update({_id: _id}, {
+                name: name,
+                author: author,
+                code: code,
+                demo: demo,
+                deps: deps,
+                path: path,
+                uses: useMyList,
+                tags: tags,
+                lastModify: Date.now()
+            }, function (err) {
+                if (err) {
+                    log.log('ERROR', err);
+                    return res.json({
+                        code: 10,
+                        msg: err.message
+                    });
+                }
+
+                // 写文件
+                util.saveFile(moduleFolder + '/' + id + '.js', code, function (result) {
+                    if (-1 === result) {
+                        return res.json({
+                            code: 12,
+                            msg: 'async file error.'
+                        });
+                    }
+                    else if (1 === result) {
+                        return res.json({
+                            code: 0,
+                            msg: 'success'
+                        });
+                    }
+                });
+            });
+        }
+
+        // 保存模块历史记录
+        function pushHistory(cb) {
+            var HISTORY_MAX = config.history_max || 10, callback = cb || function () {
+                };
+
+            HistoryModule.find({mid: _id}, {_id: 1}).sort({createTime: 'asc'}).limit(HISTORY_MAX - 1).exec(function (fErr, fData) {
+                if (fErr) {
+                    return update();
+                }
+
+                HistoryModule.find({
+                    mid: _id,
+                    _id: {
+                        $nin: fData.map(function (v) {
+                            return mongoose.Types.ObjectId(v._id);
+                        })
+                    }
+                }).remove(function (hErr, hData) {
+                    if(hErr){
+                        return update();
+                    }
+                    callback();
+                });
+            });
+        }
     }
 }
 

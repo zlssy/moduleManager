@@ -19,8 +19,16 @@ var moduleSchema = new Schema({
     tags: [String],
     modified: {type: Boolean, default: false},
     createTime: {type: Date, default: Date.now},
-    lastModify: {type:Date}
+    lastModify: {type: Date}
+});
+
+var historyModuleSchema = new Schema({
+    mid: {type: String, required: true},
+    code: String,
+    moduleDate: {type: Date},
+    createTime: {type: Date, default: Date.now}
 });
 
 exports.projectSchema = projectSchema;
 exports.moduleSchema = moduleSchema;
+exports.historyModuleSchema = historyModuleSchema;

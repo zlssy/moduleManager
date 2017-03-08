@@ -1,4 +1,4 @@
-define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function ($, util, dialog, moment) {
+define('_modules', ['jquery', 'util', 'dialog', 'moment', 'simpleTable', '_header'], function ($, util, dialog, moment, table) {
     var pid = util.url.getUrlParam('pid'),
         mid = util.url.getUrlParam('mid'),
         listItemTpl = $('#listItemTpl').html(),
@@ -13,6 +13,8 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         moduleCopyApi = globalConfig.apiRoot + 'api/copy',
         moduleSyncApi = globalConfig.apiRoot + 'api/sync',
         fileCheckApi = globalConfig.apiRoot + 'api/checkfileinfo',
+        historyApi = globalConfig.apiRoot + 'api/history/',
+        historyDownloadApi = globalConfig.apiRoot + 'api/history/download',
         retryTimes = 10,
         moduleName = '',
         demoCode = '',
@@ -57,7 +59,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
                                 keys.forEach(function (module) {
                                     if (maps[module]) {
                                         if (Math.abs(moment(maps[module].mtime).diff(moment(moduleListData[module].lastModify), 'second')) > 2) {
-                                            ul.find('li[data-module="' + module.substr(0,module.indexOf('.')) + '"]').addClass('new');
+                                            ul.find('li[data-module="' + module.substr(0, module.indexOf('.')) + '"]').addClass('new');
                                         }
                                     }
                                 });
@@ -99,12 +101,50 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
     main.on('click', '.tab > li', function () {
         var $el = $(this);
         var index = main.find('.tab > li').index($el);
+        var id = $el.attr('id') || '';
 
-        if (1 === index && demoCode && main.find('.content > div').eq(index).html() === "") {
+        if ('demo' === id && demoCode && main.find('.content > div').eq(index).html() === "") {
             main.find('.content > div').eq(index).html(demoCode);
         }
-        if (2 === index && mid) {
+        if (id.indexOf('edit') > -1 && mid) {
             location.href = moduleEditUrl + mid;
+        }
+        if ('history' === id && main.find('.content > div').eq(index).html() === "") {
+            // 载入历史记录
+            $.ajax({
+                url: historyApi + mid,
+                success: function (json) {
+                    if (0 === json.code) {
+                        var t = table({
+                            cols: [
+                                {
+                                    name: '模块创建时间', id: 'moduleDate', format: function (v) {
+                                    return moment(v).format('YYYY-MM-DD HH:mm:ss');
+                                }
+                                },
+                                {
+                                    name: '记录创建时间', id: 'createTime', format: function (v) {
+                                    return moment(v).format('YYYY-MM-DD HH:mm:ss');
+                                }
+                                },
+                                {
+                                    name: '操作', id: '_id', format: function (v) {
+                                    return '<div style="text-align: center;"><a href="' + globalConfig.apiRoot + 'api/history/download/' + v + '" target="_blank">下载</a></div>';
+                                }
+                                }
+                            ]
+                        });
+                        t.setData(json.data);
+                        main.find('.content > div').eq(index).html('<div style="margin: 24px 12px;">' + t.get() + '</div>');
+                    }
+                    else {
+                        console.log('获取数据失败。');
+                    }
+                },
+                error: function (err) {
+
+                }
+            });
         }
         if (!$el.hasClass('active')) {
             main.find('.content > div').hide().eq(index).show();
