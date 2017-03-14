@@ -15,12 +15,12 @@ define('_project', ['jquery', 'util', 'dialog', 'moment', '_header'], function (
         var errorInfo = $('.errorinfo');
         $('.create-panel .save').on('click', function () {
             errorInfo.length && errorInfo.html('');
+            var projectName = $('.create-panel input[name="project-name"]'),
+                userGroup = $('.create-panel input[name="user-group"]');
             if('' === projectName.val().trim()){
                 errorInfo.html('请填写项目名称。');
                 return;
             }
-            var projectName = $('.create-panel input[name="project-name"]'),
-                userGroup = $('.create-panel input[name="user-group"]');
             $.ajax({
                 url: api,
                 method: 'post',
