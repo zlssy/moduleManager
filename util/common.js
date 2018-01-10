@@ -81,6 +81,31 @@ exports.readFile = function (filename, cb) {
 };
 
 /**
+ * 删除指定文件
+ * @param fileArr 文件地址数组
+ * @param cb 回调函数
+ */
+exports.deleteFiles = function (fileArr, cb) {
+    var fa = fileArr instanceof Array ? fileArr : [fileArr], len = fa.length, errFileList = [];
+    fa.map(function (v) {
+        fs.unlink(path.resolve(v), function (err, data) {
+            if (err) {
+                errFileList.push(v);
+            }
+            len--;
+            if (len <= 0) {
+                if (errFileList.length) {
+                    cb(false, errFileList);
+                }
+                else {
+                    cb(true, data);
+                }
+            }
+        });
+    });
+};
+
+/**
  * 获取本地时间，单位毫秒
  * @param time
  */

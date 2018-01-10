@@ -14,7 +14,8 @@ config.mongodb.user && (connOpt.user = config.mongodb.user);
 config.mongodb.pwd && (connOpt.pass = config.mongodb.pwd);
 var db = mongoose.createConnection(connStr, connOpt);
 var moduleFolder = './public/modules';
-var distFolder = './public/dist';
+// var distFolder = './public/dist';
+var distFolder = './dist';
 
 var Project = db.model('projects', modelSchema.projectSchema);
 var Module = db.model('modules', modelSchema.moduleSchema);
@@ -98,6 +99,147 @@ router.post('/project/add', function (req, res, next) {
         res.json({
             code: 2,
             msg: 'lost required parameter projectName.'
+        });
+    }
+});
+
+/**
+ * 项目复制、复制一个已存在的项目模块至另一个已存在的项目
+ */
+router.post('/project/copy', function (req, res, next) {
+    var body = req.body;
+    var fromProject = body.fromProject || '';
+    var toProject = body.toProject || '';
+    var useMore = body.useMore || '';
+    var moreName = body.moreName || '';
+    var method = body.method || '';
+    var errMsg = [];
+    var moduleNameReadyCopy = [];
+    var newModuleInfo = [];
+
+    if (fromProject) {
+        Module.find({pid: fromProject}, function (err, data) {
+            if (err) {
+                return res.json({
+                    code: 101,
+                    msg: 'not found modules of project.'
+                });
+            }
+            /* 开始拷贝资源 */
+            var len = data.length;
+            data.map(function (v) {
+                var name = v.path && v.path.substr(v.path.lastIndexOf('/') + 1), newName = getNewModuleName(name, useMore, moreName);
+                var newModuleNode = {};
+                if (name && newName) {
+                    moduleNameReadyCopy.push(newName);
+                    newModuleNode.id = newName;
+                    newModuleNode.name = v.name;
+                    newModuleNode.author = v.author;
+                    newModuleNode.demo = v.demo;
+                    newModuleNode.path = v.path.replace(name, newName + '.js');
+                    newModuleNode.createTime = new Date();
+                    newModuleNode.pid = toProject;
+                    newModuleNode.code = v.code.replace(new RegExp('define\\\(([\'|"])' + name.split('.')[0] + '\\1'), 'define("' + newName + '"');
+                    newModuleInfo.push(newModuleNode);
+                    util.copy(moduleFolder + '/' + name, moduleFolder + '/' + newName + '.js', function (tag, data) {
+                        len--;
+                        if (!tag) {
+                            errMsg.push(name + ' copy failure.');
+                        }
+                        if (len <= 0) {
+                            if (errMsg.length) {
+                                res.json({
+                                    code: 103,
+                                    msg: errMsg.join(',')
+                                });
+                            }
+                            else {
+                                if (method == 1) {
+                                    /* 开始拷贝记录 使用覆盖策略 */
+                                    useCoverPolicyCopyFile(newName, newModuleInfo, res, next);
+                                }
+                                else if (method == 2) {
+                                    /* 开始拷贝&整理记录，使用清空重写策略 */
+                                    Module.find({pid: toProject}, function (err, data) {
+                                        if (err) {
+                                            return res.json({
+                                                code: 107,
+                                                msg: 'query the destination project failure'
+                                            });
+                                        }
+                                        var readyDeleteFiles = data.map(function (v) {
+                                            return moduleFolder + '/' + v.path.substr(v.path.lastIndexOf('/') + 1);
+                                        });
+                                        util.deleteFiles(readyDeleteFiles, function (tag, deleteFilesInfo) {
+                                            if(tag){
+                                                Module.find({pid: toProject}).remove(function (deleteDestionationFileErr, deleteDestinationFileResult) {
+                                                    if(deleteDestionationFileErr){
+                                                        return res.json({
+                                                            code: 109,
+                                                            msg: 'delete destination module from db has been failed.'
+                                                        });
+                                                    }
+                                                    useCoverPolicyCopyFile(newName, newModuleInfo, res, next);
+                                                });
+                                            }
+                                            else{
+                                                res.json({
+                                                    code: 108,
+                                                    msg: deleteFilesInfo
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
+                                else {
+                                    res.json({
+                                        code: 106,
+                                        msg: 'lost policy.'
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+        });
+    }
+    else {
+        res.json({
+            code: 102,
+            msg: 'lost the project source.'
+        });
+    }
+
+    /**
+     * 使用覆盖策略清除记录与重建模块
+     * @param newName 新模块名列表
+     * @param newModuleInfo 新模块信息列表
+     * @param res 响应流
+     * @param next node next
+     */
+    function useCoverPolicyCopyFile(newName, newModuleInfo, res, next) {
+        Module.find({id: {$in: newName}}).remove(function (removeErr, removeData) {
+            if (removeErr) {
+                return res.json({
+                    code: 104,
+                    msg: 'remove records failure.'
+                });
+            }
+            Module.create(newModuleInfo, function (createErr, createResult) {
+                if (createErr) {
+                    return res.json({
+                        code: 105,
+                        msg: 'create module failure.'
+                    });
+                }
+                /* 记录拷贝完成， 则整个流程完成 */
+                res.json({
+                    code: 0,
+                    data: []
+                });
+            });
         });
     }
 });
@@ -873,7 +1015,7 @@ function module_save(req, res, next) {
                         })
                     }
                 }).remove(function (hErr, hData) {
-                    if(hErr){
+                    if (hErr) {
                         return update();
                     }
                     callback();
@@ -881,6 +1023,23 @@ function module_save(req, res, next) {
             });
         }
     }
+}
+
+/**
+ * 获取一个新的模块名
+ * @param name 模块名
+ * @param preOrNext 前缀或者后缀
+ * @param val 前缀或者后缀值
+ */
+function getNewModuleName(name, preOrNext, val) {
+    var n = name.split('.')[0], newName = '';
+    if (preOrNext == 1) {
+        newName = val + n;
+    }
+    else if (preOrNext == 2) {
+        newName = n + val;
+    }
+    return newName;
 }
 
 module.exports = router;

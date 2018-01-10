@@ -85,7 +85,7 @@ define('util', function () {
      */
     function format(tpl, data) {
         return tpl.replace(/{([^\}]+)}/g, function (v, v1) {
-            return data[v1] ? data[v1] : v;
+            return data.hasOwnProperty(v1) ? data[v1] : v || '';
         });
     }
 
@@ -328,7 +328,7 @@ define('util', function () {
     function getTodayStr(date) {
         var d = date || new Date();
         d = 'string' === typeof d ? new Date(d) : d;
-        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDay();
+        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
     }
 
     /**
@@ -435,26 +435,27 @@ define('util', function () {
 
     TouchListen.prototype = {
         init: function () {
-            document.addEventListener('touchstart', (e)=> {
-                this.startPoint = e.targetTouches[0];
-                this.time = e.timeStamp;
+            var self = this;
+            document.addEventListener('touchstart', function (e) {
+                self.startPoint = e.targetTouches[0];
+                self.time = e.timeStamp;
             });
-            document.addEventListener('touchmove', (e)=> {
+            document.addEventListener('touchmove', function (e) {
                 var t = e.timeStamp, endPoint;
-                if (t - this.time > this.agile) {
-                    this.time = t;
+                if (t - self.time > self.agile) {
+                    self.time = t;
                     endPoint = e.targetTouches[0];
-                    if(endPoint.screenX - this.startPoint.screenX > 0){
-                        this.trigger('swipeRight', e);
+                    if (endPoint.screenX - self.startPoint.screenX > 0) {
+                        self.trigger('swipeRight', e);
                     }
-                    if(endPoint.screenX - this.startPoint.screenX < 0){
-                        this.trigger('swipeLeft', e);
+                    if (endPoint.screenX - self.startPoint.screenX < 0) {
+                        self.trigger('swipeLeft', e);
                     }
-                    if(endPoint.screenY - this.startPoint.screenY > 0){
-                        this.trigger('swipeDown', e);
+                    if (endPoint.screenY - self.startPoint.screenY > 0) {
+                        self.trigger('swipeDown', e);
                     }
-                    if(endPoint.screenY - this.startPoint.screenY < 0){
-                        this.trigger('swipeUp', e);
+                    if (endPoint.screenY - self.startPoint.screenY < 0) {
+                        self.trigger('swipeUp', e);
                     }
                 }
             });
@@ -488,6 +489,63 @@ define('util', function () {
         return str ? str.replace(/\s*$/g, '') : str;
     }
 
+    /**
+     * 延迟执行
+     * @param fn 函数
+     * @returns {*} 线程id
+     */
+    function delay(fn) {
+        return (window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+        })(fn);
+    }
+
+    /**
+     * 取消延迟执行
+     * @param id 线程id
+     */
+    function unDelay(id) {
+        (window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (id) {
+            window.clearTimeout(id);
+        })(id);
+    }
+
+    /**
+     * 灰度测试
+     * @param fn 灰度检测函数
+     */
+    function grayDebug(fn) {
+        var test = grayTest(fn);
+        return function (msg) {
+            test(window.alert, msg);
+        }
+    }
+
+    /**
+     * 灰度测试
+     * @param fn 灰度检测函数
+     */
+    function grayTest(fn) {
+        var f = typeof fn === 'function' ? fn : function (members) {
+                var user = localStorage.username || getCookie('username');
+                if (user && members.indexOf(user) > -1) {
+                    return true;
+                }
+                return false;
+            };
+        return function (factory, args, context) {
+            var factory = typeof factory === 'function' ? factory : window.alert, args = is('Array', args) ? args : args ? [args] : []
+            if (is('Array', fn)) {
+                if (f(fn)) {
+                    factory.apply(context || window, args);
+                }
+            }
+            else if (f()) {
+                factory.apply(context || window, args);
+            }
+        }
+    }
+
     return {
         object2param: object2param,
         cookie: {
@@ -515,13 +573,18 @@ define('util', function () {
         htmlEncode: htmlEncode,
         htmlDecode: htmlDecode,
         once: once,
-        is:is,
+        is: is,
         deepClone: deepClone,
         EventBase: EventBase,
         TouchListen: TouchListen,
         trim: trim,
         ltrim: ltrim,
         rtrim: rtrim,
-        log: log
+        log: log,
+        delay: delay,
+        unDelay: unDelay,
+        grayDebug: grayDebug,
+        grayTest: grayTest
     };
-});
+})
+;

@@ -89,7 +89,7 @@ a:hover { color: #24B73D; }
 
 .project-list { padding: 2px; overflow: hidden; zoom: 1; }
 
-.project-list li { float: left; width: 200px; height: 200px; border: solid 2px #31c05d; border-radius: 10px; list-style: none; margin: 6px; cursor: pointer; }
+.project-list li { float: left; width: 200px; height: 200px; border: solid 2px #31c05d; border-radius: 10px; list-style: none; margin: 6px; cursor: pointer; position: relative; }
 
 .project-list li h1 { text-align: center; }
 
@@ -116,6 +116,10 @@ a:hover { color: #24B73D; }
 .create-panel .item .errorinfo { float: left; color: red; }
 
 .create-panel .item .save { float: right; }
+
+.svg-btn-copy { width: 2em; height: 2em; vertical-align: middle; fill: #24B73D; overflow: hidden; position: absolute; bottom: 6px; right: 6px; }
+
+.svg-btn-copy:hover { fill: #74AB0A; }
 
 @charset "UTF-8";
 /* common */
