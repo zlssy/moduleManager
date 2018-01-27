@@ -14,8 +14,9 @@ config.mongodb.user && (connOpt.user = config.mongodb.user);
 config.mongodb.pwd && (connOpt.pass = config.mongodb.pwd);
 var db = mongoose.createConnection(connStr, connOpt);
 var moduleFolder = './public/modules';
-// var distFolder = './public/dist';
+
 var distFolder = './dist';
+// var distFolder = './output/dist'; // 测试服务器112.74.41.220的输出地址
 
 var Project = db.model('projects', modelSchema.projectSchema);
 var Module = db.model('modules', modelSchema.moduleSchema);
