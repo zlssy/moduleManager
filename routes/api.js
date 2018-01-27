@@ -782,7 +782,7 @@ function getDependencies(depList, deps, cb) {
                         mDepList.length && (curModuleDeps = curModuleDeps.concat(mDepList));
                     }
                     deps.exists.push(m.id);
-                    deps.map[m.id] = {
+                    deps.map[getMapName(m.id)] = {
                         name: m.name,
                         mid: m._id,
                         pid: m.pid
@@ -1040,6 +1040,10 @@ function getNewModuleName(name, preOrNext, val) {
         newName = n + val;
     }
     return newName;
+}
+
+function getMapName(name) {
+    return name.replace(/([.])/g,'__');
 }
 
 module.exports = router;

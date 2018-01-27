@@ -53,13 +53,14 @@
             <h3>依赖的模块：</h3>
             <ul>
                 <%%
-                    var item, map;
+                    var item, map, itemKey;
                     if(module.deps && (module.deps.exists.length || module.deps.lostes.length)){
                         map = module.deps.map;
                         for(var i=0,l=module.deps.exists.length;i<l;i++){
                             item = module.deps.exists[i];
+                            itemKey = item.replace(/([.])/g, '__');
                 %>
-                <li><a href="/module?mid=<%%=map[item].mid%>&pid=<%%=map[item].pid%>" title="<%%=item%>"><%%=map[item].name%></a></li>
+                <li><a href="/module?mid=<%%=map[itemKey].mid%>&pid=<%%=map[itemKey].pid%>" title="<%%=item%>"><%%=map[itemKey].name%></a></li>
                 <%%
                         }
                         for(var i=0,l=module.deps.lostes.length;i<l;i++){

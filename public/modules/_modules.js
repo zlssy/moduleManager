@@ -63,6 +63,7 @@ define('_modules', ['jquery', 'util', 'dialog', 'moment', 'simpleTable', '_heade
                                         }
                                     }
                                 });
+                                syncHeight();
                             }
                         },
                         error: function (fileErrJson) {
