@@ -23,6 +23,10 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', 'moment', '_header'
     d_demo.setTheme("ace/theme/monokai");
     d_demo.getSession().setMode("ace/mode/javascript");
 
+    function getMapName(name) {
+        return name.replace(/([.])/g,'__');
+    }
+
     /**
      * 获取项目信息并设置标题
      */
@@ -79,7 +83,7 @@ define('_moduleadd', ['jquery', 'util', 'dialog', 'ace/ace', 'moment', '_header'
                         var html = [];
                         if (json.data.deps && (json.data.deps.exists && json.data.deps.exists.length || json.data.deps.lostes.length)) {
                             json.data.deps.exists.forEach(function (v) {
-                                html.push('<li><a href="/module?mid=' + json.data.deps.map[v].mid + '&pid=' + json.data.deps.map[v].pid + '" title="' + json.data.deps.map[v].name + '">' + v + '</a></li>');
+                                html.push('<li><a href="/module?mid=' + json.data.deps.map[getMapName(v)].mid + '&pid=' + json.data.deps.map[getMapName(v)].pid + '" title="' + json.data.deps.map[getMapName(v)].name + '">' + v + '</a></li>');
                             });
                             json.data.deps.lostes.forEach(function (v) {
                                 html.push('<li class="lost">' + v + '</li>');
