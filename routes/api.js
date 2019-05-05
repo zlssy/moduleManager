@@ -1003,7 +1003,7 @@ function module_save(req, res, next) {
             var HISTORY_MAX = config.history_max || 10, callback = cb || function () {
                 };
 
-            HistoryModule.find({mid: _id}, {_id: 1}).sort({createTime: 'asc'}).limit(HISTORY_MAX - 1).exec(function (fErr, fData) {
+            HistoryModule.find({mid: _id}, {_id: 1}).sort({createTime: -1}).limit(HISTORY_MAX - 1).exec(function (fErr, fData) {
                 if (fErr) {
                     return update();
                 }
